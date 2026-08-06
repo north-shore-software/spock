@@ -1,0 +1,48 @@
+{
+  "name": "mindmeld-standalone",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "ladle": "ladle serve --port 61000",
+    "ladle:build": "ladle build",
+    "check:nav": "node scripts/check-navigation-discipline.mjs",
+    "check:routes": "vite-node -c vite.config.scripts.ts scripts/validate-routes.ts",
+    "check": "pnpm check:nav && pnpm check:routes && pnpm build",
+    "ux:extract": "vite-node -c vite.config.scripts.ts scripts/extract-flow-map.ts",
+    "ux:export": "vite-node -c vite.config.scripts.ts scripts/export-pipeline.ts",
+    "ux:verify": "vite-node -c vite.config.scripts.ts scripts/verify-artifacts.ts",
+    "ux:probe": "vite-node -c vite.config.scripts.ts scripts/verify-move-probe.ts",
+    "ux:all": "pnpm ladle:build && pnpm ux:export && pnpm ux:extract && pnpm ux:verify"
+  },
+  "dependencies": {
+    "@fontsource-variable/geist": "^5.2.9",
+    "@fontsource-variable/geist-mono": "^5.2.8",
+    "@xyflow/react": "^12.4.0",
+    "elkjs": "^0.9.3",
+    "lucide-react": "^0.469.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.14.2",
+    "valtio": "^2.3.2"
+  },
+  "devDependencies": {
+    "@ladle/react": "^5.1.1",
+    "@tailwindcss/vite": "^4.2.4",
+    "@tauri-apps/plugin-dialog": "^2.7.1",
+    "@types/jsdom": "^21.1.7",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.6.0",
+    "jsdom": "^25.0.1",
+    "playwright": "^1.49.1",
+    "tailwindcss": "^4.2.4",
+    "typescript": "~5.8.3",
+    "vite": "^7.0.4",
+    "vite-node": "^3.2.4"
+  }
+}

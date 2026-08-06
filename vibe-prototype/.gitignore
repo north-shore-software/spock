@@ -1,0 +1,7 @@
+node_modules/
+build/
+dist/
+ux-out/
+*.local
+.DS_Store
+/.idea/

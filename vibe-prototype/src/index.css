@@ -1,0 +1,23 @@
+@import "tailwindcss";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+
+/* Tailwind must scan our sources for class names regardless of which tool
+   hosts Vite. Ladle sets the Vite root to its own internal app, so without
+   an explicit @source no app utilities are generated when running in Ladle.
+   (Dropping this line silently breaks every Ladle build — and with it the
+   static exports and screenshots.) */
+@source "../src";
+
+:root {
+  --font-sans: "Geist Variable", sans-serif;
+  --font-mono: "Geist Mono Variable", monospace;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #09090b;
+  color: #f4f4f5;
+  margin: 0;
+  padding: 0;
+}
