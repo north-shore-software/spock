@@ -1,4 +1,6 @@
-![spock](https://d2thvodm3xyo6j.cloudfront.net/media/2020/03/c78780cc94c6419a-600x338.jpg)
+<p align="center">
+    <img src="https://d2thvodm3xyo6j.cloudfront.net/media/2020/03/c78780cc94c6419a-600x338.jpg" alt="Spock" />
+</p>
 
 <h1 align="center">Spock</h1>
 
