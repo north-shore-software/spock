@@ -109,8 +109,15 @@ give product owners the illusion of control. Spock is an attempt to make that co
 
 ## Repo Index
 
-`spock/` – the current prototype: a React + Vite app with typed routes and data bindings.
-Design notes are in `spock/NOTES.md`.
+This is a pnpm workspace. Run `pnpm install` at the root, then `pnpm dev` to start the sample app.
+
+`packages/core/` – `@spock/core`: the routing and data infra (route-to-data bindings and the `useData` hooks).
+The sample app consumes it as TypeScript source; it has no build step.
+
+`apps/sample/` – `@spock/sample`: a React + Vite app built on `@spock/core`, with a typed route table, a seeded store,
+and demo pages.
+
+Design notes are in `NOTES.md`.
 
 `.archive/` – old work, kept for reference only. It isn't maintained and will be deleted eventually.
 

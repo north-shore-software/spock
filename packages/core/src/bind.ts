@@ -16,7 +16,7 @@ export type DataBinding<T> = { select: () => T };
  * navigation time we throw `notFound()`. If it disappears later, `select()`
  * throws an ordinary Error for the error boundary, but only on a re-render
  * that deletion itself won't trigger. Records must not be deleted or replaced
- * while viewing; see the rule in store.ts.
+ * while viewing; see the rule in the sample app's store.ts.
  *
  * The returned function is generic (`Q extends P`) on purpose. With a
  * concrete `{ params: P }` parameter, `createRoute` infers its params type
@@ -33,7 +33,7 @@ export function bind<P extends object, T extends object>(
       data: {
         select: () => {
           const node = select(params);
-          // Guard only; deletion is not supported (see store.ts).
+          // Guard only; deletion is not supported (see the sample's store.ts).
           if (!node) throw new Error("Record removed while viewing");
           return node;
         },

@@ -15,10 +15,15 @@ import type { DataBinding } from "./bind";
  * layout gets its own node even while a deeper child route is showing.
  */
 export function useDataProxy<T extends object>(): T {
-  const data = useMatch({ strict: false, select: (m) => m.context.data });
+  // The cast also pins the selected type. Without it, an app that hasn't
+  // registered its router gets `any` here and useMatch returns the whole match.
+  const data = useMatch({
+    strict: false,
+    select: (m) => m.context.data as DataBinding<T> | undefined,
+  });
   // The root route is bound, so this only happens outside the router.
   if (!data) throw new Error("useData: no data binding in route context");
-  return data.select() as T;
+  return data.select();
 }
 
 /** A read-only, reactive snapshot of the current route's data node. */

@@ -1,20 +1,14 @@
 // Builds the router from the route table in routes.ts. Each route is one
 // create call with literal types so TanStack can infer paths, params and
 // context; the nesting here must match each entry's `parent`.
+import { opts } from "@spock/core";
 import { createRootRoute, createRoute, createRouter } from "@tanstack/react-router";
 import { routes } from "./routes";
-
-/** Drops the table-only `parent` field before handing options to TanStack. */
-function opts<T extends { parent: string }>(entry: T): Omit<T, "parent"> {
-  const { parent, ...options } = entry;
-  void parent;
-  return options;
-}
 
 // Bound routes repeat `beforeLoad` as an explicit property after the spread.
 // Only a direct property is checked against the route's path params; through
 // a spread, TanStack infers params from the binding instead, so binding a
-// route that lacks a needed param would compile (see bind.ts).
+// route that lacks a needed param would compile (see bind.ts in @spock/core).
 const { root, org, orgHome, members, project, projectOverview, projectSettings } = routes;
 const { document, shareLink } = routes;
 

@@ -1,5 +1,5 @@
 import { Link, Outlet } from "@tanstack/react-router";
-import { useDataFor } from "../data/use-data";
+import { useDataFor } from "@spock/core";
 import { membersRoute, orgHomeRoute, orgRoute } from "../router";
 import { NodeBox } from "./node-box";
 

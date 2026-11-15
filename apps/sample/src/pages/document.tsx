@@ -1,4 +1,4 @@
-import { useData } from "../data/use-data";
+import { useData } from "@spock/core";
 import type { Document } from "../data/store";
 import { NodeBox } from "./node-box";
 

@@ -10,7 +10,7 @@ import { proxy } from "valtio";
 // found at render time. Deleting or replacing a record changes its *parent*
 // (e.g. `project.documents`), which that subscription doesn't see. The page
 // keeps showing the old record, and the "Record removed while viewing" error
-// in bind.ts only fires if something else happens to re-render it.
+// in @spock/core's bind.ts only fires if something else happens to re-render it.
 //
 // Lifting this rule means subscribing to the path from the store root instead
 // of the node, e.g. by running the binding's selector against

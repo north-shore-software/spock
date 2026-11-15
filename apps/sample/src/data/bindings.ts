@@ -1,8 +1,9 @@
 // Every route-to-data binding lives here. Routes attach them via `beforeLoad`.
 // The store is imported here rather than put in router context, so routes
 // only ever see the node their binding selects.
-// Params are plain strings for now; see NOTES.md for how branded ids would fit.
-import { bind } from "./bind";
+// Params are plain strings for now; see NOTES.md at the
+// repo root for how branded ids would fit.
+import { bind } from "@spock/core";
 import { store } from "./store";
 
 export const root = bind(() => store);

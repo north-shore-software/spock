@@ -1,5 +1,5 @@
 import { Link, Outlet } from "@tanstack/react-router";
-import { useData, useDataFor, useDataProxyFor } from "../data/use-data";
+import { useData, useDataFor, useDataProxyFor } from "@spock/core";
 import { projectOverviewRoute, projectRoute, projectSettingsRoute } from "../router";
 import type { Project } from "../data/store";
 import { NodeBox } from "./node-box";
