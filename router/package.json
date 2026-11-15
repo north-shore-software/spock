@@ -1,0 +1,26 @@
+{
+  "name": "@spock/router",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -b"
+  },
+  "dependencies": {
+    "@tanstack/react-router": "^1.170.46"
+  },
+  "peerDependencies": {
+    "react": "^19.3.1",
+    "valtio": "^2.3.2"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "typescript": "~7.0.2",
+    "valtio": "^2.3.2"
+  }
+}
