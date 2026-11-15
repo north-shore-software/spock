@@ -1,10 +1,10 @@
 import { Link, Outlet } from "@tanstack/react-router";
-import { useData } from "../data/use-data";
-import type { Org } from "../data/store";
+import { useDataFor } from "../data/use-data";
+import { membersRoute, orgHomeRoute, orgRoute } from "../router";
 import { NodeBox } from "./node-box";
 
 export function OrgLayout() {
-  const org = useData<Org>();
+  const org = useDataFor(orgRoute);
   return (
     <NodeBox node={`orgs.${org.id}`}>
       <h1>{org.name}</h1>
@@ -22,7 +22,7 @@ export function OrgLayout() {
 }
 
 export function OrgHome() {
-  const org = useData<Org>();
+  const org = useDataFor(orgHomeRoute);
   return (
     <NodeBox node={`orgs.${org.id}`}>
       <h2>Projects</h2>
@@ -40,7 +40,7 @@ export function OrgHome() {
 }
 
 export function Members() {
-  const org = useData<Org>();
+  const org = useDataFor(membersRoute);
   return (
     <NodeBox node={`orgs.${org.id}`}>
       <h2>Members</h2>

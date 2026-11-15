@@ -9,14 +9,14 @@ import { ProjectLayout, ProjectOverview, ProjectSettings } from "./pages/project
 import { DocumentPage } from "./pages/document";
 
 // root — bound: whole store
-const rootRoute = createRootRoute({
+export const rootRoute = createRootRoute({
   component: RootLayout,
   notFoundComponent: NotFound,
   beforeLoad: b.root,
 });
 
 // org /$orgId — bound: org
-const orgRoute = createRoute({
+export const orgRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "$orgId",
   component: OrgLayout,
@@ -24,21 +24,21 @@ const orgRoute = createRoute({
 });
 
 // org-home /$orgId/ — inherits org
-const orgHomeRoute = createRoute({
+export const orgHomeRoute = createRoute({
   getParentRoute: () => orgRoute,
   path: "/",
   component: OrgHome,
 });
 
 // members /$orgId/members — inherits org
-const membersRoute = createRoute({
+export const membersRoute = createRoute({
   getParentRoute: () => orgRoute,
   path: "members",
   component: Members,
 });
 
 // project /$orgId/projects/$projectId — bound: project
-const projectRoute = createRoute({
+export const projectRoute = createRoute({
   getParentRoute: () => orgRoute,
   path: "projects/$projectId",
   component: ProjectLayout,
@@ -46,14 +46,14 @@ const projectRoute = createRoute({
 });
 
 // project-overview …/ — inherits project
-const projectOverviewRoute = createRoute({
+export const projectOverviewRoute = createRoute({
   getParentRoute: () => projectRoute,
   path: "/",
   component: ProjectOverview,
 });
 
 // project-settings …/settings — inherits project
-const projectSettingsRoute = createRoute({
+export const projectSettingsRoute = createRoute({
   getParentRoute: () => projectRoute,
   path: "settings",
   component: ProjectSettings,

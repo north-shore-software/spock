@@ -1,5 +1,6 @@
 import { Link, Outlet } from "@tanstack/react-router";
-import { useData, useDataProxy } from "../data/use-data";
+import { useData, useDataFor, useDataProxyFor } from "../data/use-data";
+import { projectOverviewRoute, projectRoute, projectSettingsRoute } from "../router";
 import type { Project } from "../data/store";
 import { NodeBox } from "./node-box";
 
@@ -10,7 +11,7 @@ export function ProjectHeader() {
 }
 
 export function ProjectLayout() {
-  const project = useData<Project>();
+  const project = useDataFor(projectRoute);
   return (
     <NodeBox node={`projects.${project.id}`}>
       <ProjectHeader />
@@ -32,7 +33,7 @@ export function ProjectLayout() {
 }
 
 export function ProjectOverview() {
-  const project = useData<Project>();
+  const project = useDataFor(projectOverviewRoute);
   return (
     <NodeBox node={`projects.${project.id}`}>
       <h3>Documents</h3>
@@ -57,8 +58,8 @@ export function ProjectOverview() {
 export function ProjectSettings() {
   // Writes go through the live proxy; reads through a snapshot.
   // `sync: true` re-renders synchronously, so the caret doesn't jump.
-  const proxy = useDataProxy<Project>();
-  const project = useData<Project>({ sync: true });
+  const proxy = useDataProxyFor(projectSettingsRoute);
+  const project = useDataFor(projectSettingsRoute, { sync: true });
   return (
     <NodeBox node={`projects.${project.id}`}>
       <h3>Settings</h3>

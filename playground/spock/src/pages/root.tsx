@@ -1,10 +1,10 @@
 import { Link, Outlet } from "@tanstack/react-router";
-import { useData } from "../data/use-data";
-import type { Store } from "../data/store";
+import { useDataFor } from "../data/use-data";
+import { rootRoute } from "../router";
 import { NodeBox } from "./node-box";
 
 export function RootLayout() {
-  const store = useData<Store>();
+  const store = useDataFor(rootRoute);
   return (
     <NodeBox node="store">
       <nav>
