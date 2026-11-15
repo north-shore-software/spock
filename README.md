@@ -109,4 +109,10 @@ give product owners the illusion of control. Spock is an attempt to make that co
 
 ## Repo Index
 
-`vibe-prototype/` – first stab at demonstrating technical viability.
+`spock/` – the current prototype: a React + Vite app with typed routes and data bindings.
+Design notes are in `spock/NOTES.md`.
+
+`.archive/` – old work, kept for reference only. It isn't maintained and will be deleted eventually.
+
+- `.archive/hot-mess/` – first stab at demonstrating technical viability (formerly `vibe-prototype/`).
+- `.archive/notes/` – planning notes for that first stab (formerly `mindmeld/`).
