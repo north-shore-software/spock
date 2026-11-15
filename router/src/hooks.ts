@@ -7,7 +7,7 @@ import type { Entries } from "./types";
 /**
  * Register the app's router to type route names, params and data:
  *
- *     declare module "@spock/core" {
+ *     declare module "@spock/router" {
  *       interface Register { router: typeof router }
  *     }
  */

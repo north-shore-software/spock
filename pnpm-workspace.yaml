@@ -1,5 +1,5 @@
 packages:
-  - packages/*
+  - router
   - templates/*
 
 # node_modules is shared between the Mac host and the Linux VM, so install

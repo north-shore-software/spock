@@ -1,4 +1,4 @@
-import { Link, Outlet, useData } from "@spock/core";
+import { Link, Outlet, useData } from "@spock/router";
 import { NodeBox } from "./node-box";
 
 export function OrgLayout() {

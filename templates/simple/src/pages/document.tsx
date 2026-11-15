@@ -1,4 +1,4 @@
-import { useData } from "@spock/core";
+import { useData } from "@spock/router";
 import type { Document } from "../data/store";
 import { NodeBox } from "./node-box";
 

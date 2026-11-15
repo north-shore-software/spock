@@ -1,4 +1,4 @@
-import { Link, Outlet, useData, useDataProxy, useParams } from "@spock/core";
+import { Link, Outlet, useData, useDataProxy, useParams } from "@spock/router";
 import type { Project } from "../data/store";
 import { NodeBox } from "./node-box";
 

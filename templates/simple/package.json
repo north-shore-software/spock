@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@spock/core": "workspace:*",
+    "@spock/router": "workspace:*",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "valtio": "^2.3.2"

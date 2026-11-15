@@ -6,8 +6,8 @@
 `type ProjectId = string & { readonly __brand: "ProjectId" }`, would let the
 type system tell a project id from a document id, and from any other string.
 
-**How it would fit.** This was checked against the installed router
-(1.170.46), not just assumed, before `@spock/core` wrapped TanStack. Core's
+**How it would fit.** This was checked against the installed TanStack Router
+(1.170.46), not just assumed, before `@spock/router` wrapped TanStack. The wrapper's
 route tree has no `params` option yet, so step 3 means adding one and passing
 it through to TanStack, and `CheckTree` would check selectors against the
 parsed types instead of `string`.

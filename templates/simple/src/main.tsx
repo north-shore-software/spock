@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { RouterProvider } from "@spock/core";
+import { RouterProvider } from "@spock/router";
 import { router } from "./router";
 import "./index.css";
 

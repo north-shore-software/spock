@@ -1,7 +1,7 @@
 // The route tree. Keys name the routes (`org.project.settings`); paths are
 // relative to the parent. A route with `data` is bound to that node; routes
 // without it inherit the nearest bound ancestor's node.
-import { createRouter } from "@spock/core";
+import { createRouter } from "@spock/router";
 import * as b from "./data/bindings";
 import { DocumentPage } from "./pages/document";
 import { Members, OrgHome, OrgLayout } from "./pages/org";
@@ -45,7 +45,7 @@ export const router = createRouter({
   },
 });
 
-declare module "@spock/core" {
+declare module "@spock/router" {
   interface Register {
     router: typeof router;
   }

@@ -1,4 +1,4 @@
-import { useRouteName } from "@spock/core";
+import { useRouteName } from "@spock/router";
 import type { ReactNode } from "react";
 
 /**
