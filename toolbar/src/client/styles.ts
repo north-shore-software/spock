@@ -351,6 +351,134 @@ div.route .route-name {
   font-weight: 600;
 }
 
+/* ---- State app ------------------------------------------------------- */
+
+.bound-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.bound-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  text-align: left;
+}
+button.bound-item {
+  cursor: pointer;
+}
+button.bound-item:hover {
+  background: var(--bg-hover);
+}
+.bound-route {
+  min-width: 140px;
+}
+.bound-path {
+  color: var(--text-dim);
+}
+.bound-item .tag {
+  margin-left: auto;
+}
+
+.tag.bound {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.tree {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 12px;
+}
+.tree .row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  min-height: 24px;
+  padding: 2px 8px 2px calc(4px + var(--depth) * 16px);
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  white-space: nowrap;
+}
+.tree .branch {
+  cursor: pointer;
+}
+.tree .branch:hover {
+  background: var(--bg-hover);
+}
+.tree .branch:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.tree .current {
+  background: var(--accent-soft);
+}
+.chevron,
+.spacer {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 16px;
+  color: var(--text-dim);
+}
+.chevron svg {
+  width: 12px;
+  height: 12px;
+  transition: rotate 0.12s;
+}
+.branch[aria-expanded="true"] .chevron svg {
+  rotate: 90deg;
+}
+.key {
+  color: var(--text);
+}
+.key.index {
+  color: var(--text-dim);
+}
+.colon {
+  margin-right: 4px;
+  color: var(--text-dim);
+}
+.preview {
+  margin-left: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-dim);
+}
+.tree .tag {
+  margin-left: 6px;
+  font-family: system-ui, sans-serif;
+}
+.value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.value.string {
+  color: #9ece6a;
+}
+.value.number {
+  color: #ff9e64;
+}
+.value.keyword {
+  color: #bb9af7;
+}
+.tree .changed {
+  animation: changed 1s ease-out;
+}
+@keyframes changed {
+  from {
+    background: rgb(110 168 254 / 0.35);
+  }
+}
+
 /* ---- Settings app ---------------------------------------------------- */
 
 .setting {

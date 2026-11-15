@@ -4,6 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "pnpm --filter @spock/simple dev",
+    "dev:landing": "pnpm --filter @spock/landing dev",
+    "dev:docs": "pnpm --filter @spock/docs dev",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
     "lint": "oxlint router toolbar templates"

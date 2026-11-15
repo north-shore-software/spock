@@ -20,4 +20,7 @@ export type AppHost = {
   notify(on: boolean): void;
   /** Closes the app's window, if it's open. */
   close(): void;
+  readonly isOpen: boolean;
+  /** Calls `listener` when the app's window opens or closes. */
+  onToggle(listener: (open: boolean) => void): void;
 };

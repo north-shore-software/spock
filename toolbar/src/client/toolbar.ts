@@ -27,12 +27,19 @@ export function mountToolbar(apps: ToolbarApp[], settings: SettingsStore): void 
   let open: string | undefined;
   const buttons = new Map<string, HTMLButtonElement>();
   const windows = new Map<string, HTMLElement>();
+  const toggleListeners = new Map<string, Set<(open: boolean) => void>>();
+  const notifyToggle = (id: string | undefined, isOpen: boolean) =>
+    id !== undefined && toggleListeners.get(id)?.forEach((listener) => listener(isOpen));
 
   function setOpen(id: string | undefined) {
+    const was = open;
     open = id;
     for (const [appId, button] of buttons) button.setAttribute("aria-pressed", String(appId === id));
     for (const [appId, win] of windows) win.hidden = appId !== id;
     root.toggleAttribute("data-open", id !== undefined);
+    if (was === id) return;
+    notifyToggle(was, false);
+    notifyToggle(id, true);
   }
 
   apps.forEach((app, index) => {
@@ -69,6 +76,7 @@ export function mountToolbar(apps: ToolbarApp[], settings: SettingsStore): void 
       panel,
     );
     buttons.set(app.id, button);
+    toggleListeners.set(app.id, new Set());
     windows.set(app.id, win);
     bar.append(button);
     root.append(win);
@@ -80,6 +88,10 @@ export function mountToolbar(apps: ToolbarApp[], settings: SettingsStore): void 
       close: () => {
         if (open === app.id) setOpen(undefined);
       },
+      get isOpen() {
+        return open === app.id;
+      },
+      onToggle: (listener) => toggleListeners.get(app.id)!.add(listener),
     };
     app.init(host);
   });
