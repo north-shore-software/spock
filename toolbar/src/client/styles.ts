@@ -165,7 +165,7 @@ code {
 .toolbar[data-hidden] .hitbox {
   height: calc(var(--edge) + 8px);
 }
-.toolbar[data-hidden]:not([data-peek], [data-open]) .bar {
+.toolbar[data-hidden]:not([data-peek], [data-open], [data-overlay]) .bar {
   transform: translateY(calc(100% + var(--edge) + 4px));
   opacity: 0;
   pointer-events: none;
@@ -223,6 +223,40 @@ code {
 .window-body {
   padding: 4px 16px 16px;
   overflow: auto;
+}
+
+/* ---- Overlay --------------------------------------------------------- */
+
+/* Covers the whole viewport, solid, under the bar so the bar stays usable. */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483645;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+.overlay[hidden] {
+  display: none;
+}
+.overlay > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 12px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.overlay h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+.overlay-body {
+  flex: 1;
+  /* Clear of the bar, which floats over the bottom of the overlay. */
+  padding: 8px 24px calc(var(--bar-height) + 2 * var(--edge) + 16px);
+  overflow: auto;
+  overscroll-behavior: contain;
 }
 
 /* ---- Panel building blocks ------------------------------------------- */

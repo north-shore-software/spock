@@ -1,6 +1,7 @@
-// The toolbar itself: a pill of app buttons at the bottom of the page, and a
-// window above it for whichever app is open. It renders into a shadow root,
-// so the page's styles and the toolbar's can't reach each other.
+// The toolbar itself: a pill of app buttons at the bottom of the page, a
+// window above it for whichever app is open, and a full-viewport overlay that
+// covers the app entirely. It renders into a shadow root, so the page's styles
+// and the toolbar's can't reach each other.
 import type { AppHost, ToolbarApp } from "./app";
 import { fromMarkup, h } from "./dom";
 import { icons } from "./icons";
@@ -31,7 +32,47 @@ export function mountToolbar(apps: ToolbarApp[], settings: SettingsStore): void 
   const notifyToggle = (id: string | undefined, isOpen: boolean) =>
     id !== undefined && toggleListeners.get(id)?.forEach((listener) => listener(isOpen));
 
+  // The overlay and the app windows take turns: opening one closes the other.
+  let overlayOpen = false;
+  const overlayButton = h(
+    "button",
+    {
+      class: "app",
+      type: "button",
+      "aria-label": "Full screen",
+      "aria-pressed": "false",
+      onclick: () => setOverlay(!overlayOpen),
+    },
+    fromMarkup(icons.fullscreen),
+    h("span", { class: "tooltip", "aria-hidden": "true" }, "Full screen"),
+  );
+  // A placeholder for now: the apps' content will move in here.
+  const overlay = h(
+    "section",
+    { class: "overlay", "aria-label": "Spock", hidden: true },
+    h(
+      "header",
+      {},
+      h("h2", {}, "Spock"),
+      h(
+        "button",
+        { class: "close", type: "button", "aria-label": "Close full screen", onclick: () => setOverlay(false) },
+        fromMarkup(icons.close),
+      ),
+    ),
+    h("div", { class: "overlay-body" }, h("p", { class: "empty" }, "Nothing here yet.")),
+  );
+
+  function setOverlay(on: boolean) {
+    if (on) setOpen(undefined);
+    overlayOpen = on;
+    overlay.hidden = !on;
+    overlayButton.setAttribute("aria-pressed", String(on));
+    root.toggleAttribute("data-overlay", on);
+  }
+
   function setOpen(id: string | undefined) {
+    if (id !== undefined && overlayOpen) setOverlay(false);
     const was = open;
     open = id;
     for (const [appId, button] of buttons) button.setAttribute("aria-pressed", String(appId === id));
@@ -43,8 +84,12 @@ export function mountToolbar(apps: ToolbarApp[], settings: SettingsStore): void 
   }
 
   apps.forEach((app, index) => {
-    // The last app (Settings) sits apart from the rest, as in Astro's toolbar.
-    if (index === apps.length - 1 && apps.length > 1) bar.append(h("div", { class: "separator" }));
+    // The last app (Settings) sits apart from the rest, as in Astro's toolbar,
+    // next to the full screen button.
+    if (index === apps.length - 1) {
+      if (apps.length > 1) bar.append(h("div", { class: "separator" }));
+      bar.append(overlayButton);
+    }
 
     const button = h(
       "button",
@@ -105,10 +150,12 @@ export function mountToolbar(apps: ToolbarApp[], settings: SettingsStore): void 
   settings.subscribe(apply);
 
   window.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && open !== undefined) setOpen(undefined);
+    if (event.key !== "Escape") return;
+    if (open !== undefined) setOpen(undefined);
+    else if (overlayOpen) setOverlay(false);
   });
 
-  root.append(hitbox, bar);
+  root.append(overlay, hitbox, bar);
   shadow.append(h("style", {}, styles), root);
   document.body.append(element);
 }
