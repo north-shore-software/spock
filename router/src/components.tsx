@@ -3,6 +3,7 @@ import { Link as TanStackLink, RouterProvider as TanStackRouterProvider, useMatc
 import type { ReactNode } from "react";
 import { RouterContext, useRouterContext } from "./context";
 import type { EntryOf, ParamsOf, RouteName } from "./hooks";
+import { paramNames } from "./paths";
 import type { Router } from "./router";
 
 export { Outlet } from "@tanstack/react-router";
@@ -46,12 +47,3 @@ export function Link<N extends RouteName>(props: LinkProps<N>) {
   }
   return <TanStackLink {...rest} to={path} params={merged} activeOptions={{ exact }} />;
 }
-
-/** The `$name` params in a TanStack path, e.g. `/$orgId/projects/$projectId`. */
-function paramNames(path: string): string[] {
-  return path
-    .split("/")
-    .filter((segment) => segment.startsWith("$"))
-    .map((segment) => segment.slice(1));
-}
-

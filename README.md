@@ -117,8 +117,20 @@ with `node<T>()`, and the tree checks at compile time that each page fits where 
 target by name and fills in params from the current route. TanStack Router runs underneath but isn't part of the API.
 The simple template consumes it as TypeScript source; it has no build step.
 
+`toolbar/` – `@spock/toolbar`: a dev toolbar, modelled on Astro's. Add `spockToolbar()` to an app's Vite plugins
+and, in dev only, a bar of apps appears at the bottom of the page. The Router app shows the location, the matched routes
+and where each got its data node, and the route tree, whose routes you can click to navigate. It explains "not found"
+pages too. The State app shows the store as a live tree, opened down to the nodes the current routes are bound to.
+Settings moves or hides the bar. It's plain DOM in a shadow root, so it keeps working when the app's render
+throws. It reads the router through `@spock/router/devtools`.
+
 `templates/simple/` – `@spock/simple`: a React + Vite app built on `@spock/router`, with a route tree, a seeded store,
 and demo pages.
+
+`docs/` – the documentation, as Markdown. `docs/site/` is the Starlight site that serves it at spock.cc; run it with
+`pnpm dev:docs`.
+
+`brand/` – the brand kit: logos, illustration, icons, fonts and design tokens. See `brand/README.md`.
 
 Design notes are in `NOTES.md`.
 

@@ -4,9 +4,10 @@
   "type": "module",
   "scripts": {
     "dev": "pnpm --filter @spock/simple dev",
+    "dev:docs": "pnpm --filter @spock/docs dev",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
-    "lint": "oxlint router templates"
+    "lint": "oxlint router toolbar templates"
   },
   "devDependencies": {
     "oxlint": "^1.90.0"

@@ -1,0 +1,39 @@
+---
+title: spock
+description: Make greenfield development with coding agents feel telepathic.
+template: splash
+hero:
+  title: Draw the outlines first. Then colour them in.
+  tagline: Make greenfield development with coding agents feel telepathic.
+  image:
+    light: ../brand/illustration/spock-illustration-ink.png
+    dark: ../brand/illustration/spock-illustration-white.png
+    alt: "A line drawing of a mind meld: a figure with pointed ears rests their fingertips on another person's face."
+  actions:
+    - text: Get started
+      link: /getting-started/
+      icon: right-arrow
+    - text: GitHub
+      link: https://github.com/north-shore-software/spock
+      icon: github
+      variant: minimal
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+:::caution[Experimental]
+Things that exist are probably broken, and if they're not, they might be tomorrow.
+:::
+
+<CardGrid>
+	<LinkCard
+		title="@spock/router"
+		description="A typed route tree with data bindings. Pages say what shape of data they need, and the type checker makes sure each one fits where it's placed."
+		href="/router/"
+	/>
+	<LinkCard
+		title="@spock/toolbar"
+		description="A dev toolbar for spock apps. It shows the matched routes, where each got its data, and the store as a live tree."
+		href="/toolbar/"
+	/>
+</CardGrid>
