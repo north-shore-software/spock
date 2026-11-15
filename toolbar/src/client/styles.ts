@@ -32,6 +32,11 @@ button {
   color: inherit;
 }
 
+/* Wraps an icon's SVG markup; lays out as if the SVG were bare. */
+.icon {
+  display: contents;
+}
+
 code {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   font-size: 12px;
@@ -165,7 +170,7 @@ code {
 .toolbar[data-hidden] .hitbox {
   height: calc(var(--edge) + 8px);
 }
-.toolbar[data-hidden]:not([data-peek], [data-open]) .bar {
+.toolbar[data-hidden]:not([data-peek], [data-open], [data-overlay], [data-picking]) .bar {
   transform: translateY(calc(100% + var(--edge) + 4px));
   opacity: 0;
   pointer-events: none;
@@ -223,6 +228,112 @@ code {
 .window-body {
   padding: 4px 16px 16px;
   overflow: auto;
+}
+
+/* ---- Overlay --------------------------------------------------------- */
+
+/* Covers the whole viewport, solid, under the bar so the bar stays usable. */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483645;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+.overlay[hidden] {
+  display: none;
+}
+.overlay > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 12px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.overlay h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+.overlay-body {
+  flex: 1;
+  /* Clear of the bar, which floats over the bottom of the overlay. */
+  padding: 8px 24px calc(var(--bar-height) + 2 * var(--edge) + 16px);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+/* ---- Element picker -------------------------------------------------- */
+
+/* Both ignore the pointer, so hit testing reaches the page under them. */
+.pick-box,
+.pick-label {
+  position: fixed;
+  z-index: 2147483645;
+  pointer-events: none;
+}
+.pick-box {
+  border: 1.5px solid var(--accent);
+  background: rgb(110 168 254 / 0.12);
+}
+.pick-label {
+  display: flex;
+  gap: 6px;
+  max-width: 320px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--accent);
+  color: #0b1220;
+  font: 500 12px/18px ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  white-space: nowrap;
+  translate: 0 calc(-100% - 4px);
+}
+.pick-label[data-inside] {
+  translate: 4px 4px;
+}
+.pick-component {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 700;
+}
+.pick-tag {
+  opacity: 0.7;
+}
+
+/* ---- Toast ----------------------------------------------------------- */
+
+.toast {
+  position: fixed;
+  z-index: 2147483646;
+  bottom: calc(var(--edge) + var(--bar-height) + 12px);
+  left: 50%;
+  translate: -50% 0;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.35);
+  pointer-events: none;
+  animation: toast 2s ease forwards;
+}
+.toast[data-error] {
+  color: var(--danger);
+}
+@keyframes toast {
+  from {
+    opacity: 0;
+    translate: -50% 4px;
+  }
+  10%,
+  85% {
+    opacity: 1;
+    translate: -50% 0;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 /* ---- Panel building blocks ------------------------------------------- */

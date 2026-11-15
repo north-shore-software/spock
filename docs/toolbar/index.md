@@ -11,6 +11,7 @@ In dev, a bar of apps appears at the bottom of the page:
 - **[State](/toolbar/apps/#state)** shows the store as a live tree, opened down to the nodes the current routes are
   bound to.
 - **[Settings](/toolbar/apps/#settings)** moves or hides the bar.
+- **[Select element](/toolbar/apps/#select-element)** copies an element's component, source and route, for an agent.
 
 ## Setup
 
@@ -49,5 +50,6 @@ so if your app lives outside the workspace, add the package to
 
 ## When the app breaks
 
-The toolbar is plain DOM in a shadow root, not React. The page's styles can't reach it, and it keeps working when the
-app's render throws, so you can still see which route failed and what data it had.
+The toolbar is its own React root in a shadow root, separate from the app's. The page's styles can't reach it, and it
+keeps working when the app's render throws, so you can still see which route failed and what data it had. It uses the
+app's copy of React, so it adds nothing to the page.
