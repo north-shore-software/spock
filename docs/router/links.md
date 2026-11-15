@@ -1,8 +1,6 @@
 ---
 title: Links
 description: Navigating by route name with Link, and how params are filled in.
-sidebar:
-  order: 4
 ---
 
 `Link` targets a route by name, never by URL:

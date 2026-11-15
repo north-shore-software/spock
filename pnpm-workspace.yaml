@@ -2,7 +2,7 @@ packages:
   - router
   - toolbar
   - templates/*
-  - sites/*
+  - docs/site
 
 # node_modules is shared between the Mac host and the Linux VM, so install
 # native binaries (TypeScript 7, oxlint, rolldown) for both, on arm64 and x64.

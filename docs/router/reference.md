@@ -1,8 +1,6 @@
 ---
 title: API reference
 description: Every export of @spock/router.
-sidebar:
-  order: 5
 ---
 
 Everything here is exported from `@spock/router`. Dev tools use a separate entry point,

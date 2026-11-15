@@ -1,8 +1,6 @@
 ---
 title: Apps
 description: What the toolbar's Router, State and Settings apps show.
-sidebar:
-  order: 1
 ---
 
 Click an app's button to open its window, and click it again or press <kbd>Esc</kbd> to close it. An app with

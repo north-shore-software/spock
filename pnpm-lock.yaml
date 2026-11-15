@@ -12,6 +12,18 @@ importers:
         specifier: ^1.90.0
         version: 1.93.0
 
+  docs/site:
+    dependencies:
+      '@astrojs/starlight':
+        specifier: ^0.43.1
+        version: 0.43.1(astro@7.4.12(@types/node@24.19.2)(yaml@2.9.1))(typescript@7.0.2)
+      astro:
+        specifier: ^7.4.12
+        version: 7.4.12(@types/node@24.19.2)(yaml@2.9.1)
+      sharp:
+        specifier: ^0.35.3
+        version: 0.35.5(@types/node@24.19.2)
+
   router:
     dependencies:
       '@tanstack/react-router':
@@ -33,24 +45,6 @@ importers:
       valtio:
         specifier: ^2.3.2
         version: 2.3.2(@types/react@19.3.0)(react@19.3.1)
-
-  sites/docs:
-    dependencies:
-      '@astrojs/starlight':
-        specifier: ^0.43.1
-        version: 0.43.1(astro@7.4.12(@types/node@24.19.2)(yaml@2.9.1))(typescript@7.0.2)
-      astro:
-        specifier: ^7.4.12
-        version: 7.4.12(@types/node@24.19.2)(yaml@2.9.1)
-      sharp:
-        specifier: ^0.35.3
-        version: 0.35.5(@types/node@24.19.2)
-
-  sites/landing:
-    dependencies:
-      astro:
-        specifier: ^7.4.12
-        version: 7.4.12(@types/node@24.19.2)(yaml@2.9.1)
 
   templates/simple:
     dependencies:
@@ -2280,7 +2274,7 @@ snapshots:
     dependencies:
       '@emnapi/core': 1.11.1
       '@emnapi/runtime': 1.11.1
-      '@napi-rs/wasm-runtime': 1.2.6(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)
+      '@napi-rs/wasm-runtime': 1.2.7(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)
     optional: true
 
   '@bruits/satteri-wasm32-wasi@0.11.7':
@@ -2501,13 +2495,6 @@ snapshots:
     optional: true
 
   '@jridgewell/sourcemap-codec@1.6.0': {}
-
-  '@napi-rs/wasm-runtime@1.2.6(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)':
-    dependencies:
-      '@emnapi/core': 1.11.1
-      '@emnapi/runtime': 1.11.1
-      '@tybys/wasm-util': 0.10.4
-    optional: true
 
   '@napi-rs/wasm-runtime@1.2.6(@emnapi/core@2.0.0-beta.2)(@emnapi/runtime@2.0.0-beta.2)':
     dependencies:

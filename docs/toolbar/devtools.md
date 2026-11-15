@@ -1,8 +1,6 @@
 ---
 title: How it works
 description: How the toolbar reads the router, through @spock/router/devtools.
-sidebar:
-  order: 2
 ---
 
 The toolbar reads the router through a separate entry point, `@spock/router/devtools`. It's what dev tools can see of

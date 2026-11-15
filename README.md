@@ -127,6 +127,11 @@ throws. It reads the router through `@spock/router/devtools`.
 `templates/simple/` – `@spock/simple`: a React + Vite app built on `@spock/router`, with a route tree, a seeded store,
 and demo pages.
 
+`docs/` – the documentation, as Markdown. `docs/site/` is the Starlight site that serves it at spock.cc; run it with
+`pnpm dev:docs`.
+
+`brand/` – the brand kit: logos, illustration, icons, fonts and design tokens. See `brand/README.md`.
+
 Design notes are in `NOTES.md`.
 
 `.archive/` – old work, kept for reference only. It isn't maintained and will be deleted eventually.

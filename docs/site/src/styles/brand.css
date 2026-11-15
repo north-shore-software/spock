@@ -1,0 +1,106 @@
+/* The brand kit (../../../../brand) mapped onto Starlight's theme variables.
+   Light mode uses the kit's palette as-is. The kit has no dark palette, so dark mode is
+   derived from it: Ink is the background, with Line, Slate and Mist stepped towards it
+   for the greys. Spock Blue is 3.6:1 on Ink, enough for borders and buttons but not
+   text, so links and other blue text use Blue 200 there. */
+@import '../../../../brand/tokens/fonts.css';
+@import '../../../../brand/tokens/tokens.css';
+
+/* Dark (Starlight's default, under `:root`) */
+:root {
+	--sl-color-white: #ffffff;
+	--sl-color-gray-1: #e9ebf5;
+	--sl-color-gray-2: #c9ccdd; /* body text, 11.4:1 on Ink */
+	--sl-color-gray-3: #8d90a8; /* secondary text, 5.8:1 on Ink */
+	--sl-color-gray-4: #5a5a6e; /* Slate */
+	--sl-color-gray-5: #2a2c40; /* the dark Line: hairlines, inline code */
+	--sl-color-gray-6: #1b1c2b; /* the dark Mist: nav, sidebar, code blocks */
+	--sl-color-black: var(--spock-ink);
+
+	--sl-color-accent-low: #1c2463; /* Spock Blue sunk into Ink */
+	--sl-color-accent: var(--spock-blue);
+	--sl-color-accent-high: var(--spock-blue-200);
+
+	--sl-color-blue-low: var(--sl-color-accent-low);
+	--sl-color-blue: var(--sl-color-accent);
+	--sl-color-blue-high: var(--sl-color-accent-high);
+
+	--sl-color-backdrop-overlay: rgb(20 20 32 / 0.66);
+}
+
+/* Light */
+:root[data-theme='light'],
+[data-theme='light'] ::backdrop {
+	--sl-color-white: var(--spock-ink);
+	--sl-color-gray-1: var(--spock-ink);
+	--sl-color-gray-2: #2a2b3a; /* body text */
+	--sl-color-gray-3: var(--spock-slate);
+	--sl-color-gray-4: #8e8fa3;
+	--sl-color-gray-5: #c9ccda;
+	--sl-color-gray-6: var(--spock-line);
+	--sl-color-gray-7: var(--spock-mist);
+	--sl-color-black: var(--spock-paper);
+
+	--sl-color-accent-low: var(--spock-blue-200);
+	--sl-color-accent: var(--spock-blue);
+	--sl-color-accent-high: var(--spock-blue-deep);
+
+	--sl-color-blue-low: var(--spock-mist);
+	--sl-color-blue: var(--sl-color-accent);
+	--sl-color-blue-high: var(--sl-color-accent-high);
+
+	--sl-color-bg-inline-code: var(--spock-mist);
+	--sl-color-hairline-light: var(--spock-line);
+	--sl-color-hairline-shade: var(--spock-line);
+
+	--sl-color-backdrop-overlay: rgb(20 20 32 / 0.4);
+}
+
+/* Type: Inter for everything people read, JetBrains Mono for code, Comfortaa for
+   headlines only (32px and up, short lines). */
+:root {
+	--sl-font: var(--spock-font-body);
+	--sl-font-mono: var(--spock-font-mono);
+	--sl-text-body: 1.0625rem;
+	--sl-text-code: 0.9375rem;
+	--sl-line-height: 1.65;
+}
+
+h1#_top {
+	font-family: var(--spock-font-display);
+	font-weight: 600;
+	letter-spacing: -0.01em;
+}
+
+::selection {
+	background-color: var(--spock-blue-200);
+	color: var(--spock-ink);
+}
+
+/* Links go deep on hover, as the kit says. */
+:root[data-theme='light'] .sl-markdown-content a:not(:where(.not-content *)):hover {
+	color: var(--spock-blue-deep);
+}
+
+/* Amber has one job: it marks things that aren't decided yet. Caution asides are where
+   these docs say "this is experimental", so they get the placeholder treatment. */
+.starlight-aside--caution {
+	--sl-color-asides-text-accent: var(--spock-ink);
+	--sl-color-asides-border: var(--spock-ink);
+	background-color: var(--spock-amber);
+	color: var(--spock-ink);
+	border: var(--spock-stroke) dashed var(--spock-ink);
+	border-radius: var(--spock-radius-md);
+}
+.starlight-aside--caution code {
+	color: var(--spock-ink);
+}
+
+/* The home page: the illustration needs room, and the hero headline is display type. */
+.hero > img {
+	width: min(100%, 30rem);
+}
+.hero h1 {
+	font-size: clamp(var(--sl-text-4xl), 6vw, 4.5rem);
+	line-height: 1.05;
+}

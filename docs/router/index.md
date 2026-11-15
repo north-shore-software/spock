@@ -1,8 +1,6 @@
 ---
 title: Overview
 description: How @spock/router joins a route tree to a data tree, and what the type checker enforces.
-sidebar:
-  order: 0
 ---
 
 `@spock/router` is a typed router for React apps. You define a route tree with data bindings, and the type checker

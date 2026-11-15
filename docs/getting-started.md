@@ -1,10 +1,10 @@
 ---
 title: Getting started
-description: Run the Spock template app, and start a new app from it.
+description: Run the spock template app, and start a new app from it.
 ---
 
-Spock isn't published to npm yet. Its packages live in a pnpm workspace, and apps use them from there as TypeScript
-source, with no build step. So for now, a Spock app lives inside the workspace too.
+spock isn't published to npm yet. Its packages live in a pnpm workspace, and apps use them from there as TypeScript
+source, with no build step. So for now, a spock app lives inside the workspace too.
 
 ## Run the template
 

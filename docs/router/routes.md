@@ -1,8 +1,6 @@
 ---
 title: The route tree
 description: Defining routes with createRouter, and how they get their names, paths and params.
-sidebar:
-  order: 1
 ---
 
 The route tree is one object literal passed to `createRouter`. It's the app's navigation: which screens exist, how

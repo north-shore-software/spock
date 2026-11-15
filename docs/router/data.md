@@ -1,8 +1,6 @@
 ---
 title: Data
 description: Binding routes to nodes in the data tree, and reading and writing them from components.
-sidebar:
-  order: 2
 ---
 
 The data tree is a [valtio](https://valtio.dev) store, shaped by the domain rather than by the URLs. Routes reach into

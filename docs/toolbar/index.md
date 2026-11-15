@@ -1,8 +1,6 @@
 ---
 title: Overview
-description: Add the Spock dev toolbar to an app with its Vite plugin.
-sidebar:
-  order: 0
+description: Add the spock dev toolbar to an app with its Vite plugin.
 ---
 
 `@spock/toolbar` is a dev toolbar for Spock apps, modelled on [Astro's](https://docs.astro.build/en/guides/dev-toolbar/).

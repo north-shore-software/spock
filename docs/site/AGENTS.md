@@ -1,3 +1,12 @@
+## Layout
+
+This folder is only the site tooling. The pages are the Markdown files one level up, in `docs/`:
+`docs/router/data.md` is served at `/router/data/`. Keep content there, not in `src/`.
+
+- The sidebar is listed by hand in `astro.config.mjs`. Add a new page there too, or it won't appear.
+- Styling is the repo's brand kit (`brand/`) mapped onto Starlight in `src/styles/brand.css`. `brand/` is
+  served at `/brand/` as-is; don't copy its files in here.
+
 ## Development
 
 When starting the dev server, use background mode:

@@ -1,4 +1,4 @@
-/* Self-hosted brand fonts (latin subset, SIL Open Font License; see fonts/*/OFL.txt).
+/* Self-hosted brand fonts (latin subset, SIL Open Font License; see the OFL.txt in each fonts/ folder).
    Paths are relative to this file. */
 
 @font-face { font-family: "Comfortaa"; font-style: normal; font-weight: 400; font-display: swap; src: url("../fonts/comfortaa/comfortaa-latin-400-normal.woff2") format("woff2"); }

@@ -1,8 +1,6 @@
 ---
 title: Pages
 description: Declaring the node shape a page needs with node<T>(), and what the tree checks.
-sidebar:
-  order: 3
 ---
 
 A page is a route component. It renders with no props, and reads its data through hooks. It never names its route:
