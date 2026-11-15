@@ -1,0 +1,44 @@
+/* spock brand tokens. Import once, before your app styles:
+   @import "./brand/tokens/fonts.css";
+   @import "./brand/tokens/tokens.css";                                   */
+
+:root {
+  /* Color */
+  --spock-blue: #3D5AFE;        /* primary: wordmark, buttons, links. 5.2:1 on white */
+  --spock-blue-deep: #2A3FD1;   /* hover / pressed. 7.7:1 on white */
+  --spock-blue-200: #CFD6FF;    /* focus rings, selection */
+  --spock-mist: #F4F6FF;        /* section bands, code blocks */
+  --spock-ink: #141420;         /* body text, outlines, illustration */
+  --spock-slate: #5A5A6E;       /* secondary text. 6.7:1 on white */
+  --spock-line: #E6E8F0;        /* hairlines, borders */
+  --spock-paper: #FFFFFF;       /* default background */
+  --spock-amber: #FFB020;       /* PLACEHOLDER ONLY: undecided things. Ink text on it, never as text on white */
+
+  /* Type */
+  --spock-font-display: "Comfortaa", ui-rounded, system-ui, sans-serif;
+  --spock-font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --spock-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --spock-text-display: 600 4.5rem/1.05 var(--spock-font-display);  /* 72px */
+  --spock-text-h2: 600 2.75rem/1.1 var(--spock-font-display);       /* 44px */
+  --spock-text-h3: 600 1.5rem/1.3 var(--spock-font-body);           /* 24px */
+  --spock-text-body: 400 1.125rem/1.6 var(--spock-font-body);       /* 18px */
+  --spock-text-small: 500 0.875rem/1.5 var(--spock-font-body);      /* 14px */
+  --spock-text-code: 400 0.9375rem/1.6 var(--spock-font-mono);      /* 15px */
+
+  /* Shape */
+  --spock-radius-sm: 10px;
+  --spock-radius-md: 14px;
+  --spock-radius-lg: 20px;
+  --spock-radius-xl: 24px;
+  --spock-radius-pill: 999px;
+  --spock-stroke: 2px;          /* outline weight for cards, diagrams, wireframes */
+}
+
+/* The placeholder treatment: anything not yet decided */
+.spock-placeholder {
+  background: var(--spock-amber);
+  color: var(--spock-ink);
+  border: var(--spock-stroke) dashed var(--spock-ink);
+  border-radius: var(--spock-radius-pill);
+}
