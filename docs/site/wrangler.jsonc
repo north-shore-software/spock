@@ -1,0 +1,12 @@
+// Deploys the docs site (spock.cc) as static assets on Cloudflare Workers.
+// The build command builds it into dist/; there's no Worker script, only the files.
+{
+	"name": "spock-cc",
+	"compatibility_date": "2026-11-15",
+	"assets": {
+		"directory": "./dist",
+		// Starlight builds a 404.html; serve it for paths that don't exist.
+		"not_found_handling": "404-page"
+	},
+	"previews": {}
+}
