@@ -1,17 +1,21 @@
 // The toolbar itself: a pill of app buttons at the bottom of the page, a
-// window above it for whichever app is open, and a full-viewport overlay that
-// covers the app entirely.
+// window above it for whichever app is open, a full-viewport overlay that
+// covers the app entirely, and the element picker, which copies an element's
+// context for an agent.
 //
 // It's a React root of its own, inside a shadow root. The page's styles can't
 // reach it, and since it's a separate root from the app's, an error in the
 // app's render can't take it down. Apps still draw their panels as plain DOM:
 // each gets an element the shell keeps mounted in its window. mount.tsx puts
 // it on the page.
-import { Fragment, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
+import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { ToolbarApp } from "./app";
+import { grab } from "./grab";
 import { icons } from "./icons";
+import { Picker } from "./picker";
 import type { SettingsStore } from "./settings";
 import type { Shell } from "./shell";
+import { spockContext } from "./spock-context";
 
 /** An app, with the element its panel draws into. */
 export type MountedApp = ToolbarApp & { panel: HTMLElement };
@@ -19,17 +23,43 @@ export type MountedApp = ToolbarApp & { panel: HTMLElement };
 /** `data-*` flags are present or absent; React would write `"false"`. */
 const flag = (on: boolean) => (on ? "" : undefined);
 
-export function Toolbar({ apps, settings, shell }: { apps: MountedApp[]; settings: SettingsStore; shell: Shell }) {
-  const { open, overlay, notified } = useSyncExternalStore(shell.subscribe, shell.get);
+type ToolbarProps = {
+  apps: MountedApp[];
+  settings: SettingsStore;
+  shell: Shell;
+  /** The toolbar's own element on the page, whose shadow root this renders into. */
+  host: HTMLElement;
+};
+
+export function Toolbar({ apps, settings, shell, host }: ToolbarProps) {
+  const { open, overlay, picking, notified } = useSyncExternalStore(shell.subscribe, shell.get);
   const { placement, hidden, notifications } = useSyncExternalStore(settings.subscribe, settings.get);
   // While hidden, hovering the strip along the bottom edge brings the bar back.
   const [peek, setPeek] = useState(false);
+  const [toast, showToast] = useToast();
+
+  const pick = useCallback(
+    async (element: Element) => {
+      shell.setPicking(false);
+      try {
+        const { componentName, text } = await grab(element);
+        const spock = spockContext();
+        await navigator.clipboard.writeText(spock ? `${text}\n\n${spock}` : text);
+        showToast({ text: `Copied ${componentName ?? `<${element.tagName.toLowerCase()}>`}` });
+      } catch (error) {
+        console.error("[spock toolbar] Couldn't copy the element's context:", error);
+        showToast({ text: "Couldn't copy the element", error: true });
+      }
+    },
+    [shell, showToast],
+  );
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
-      const { open, overlay } = shell.get();
-      if (open !== undefined) shell.setOpen(undefined);
+      const { open, overlay, picking } = shell.get();
+      if (picking) shell.setPicking(false);
+      else if (open !== undefined) shell.setOpen(undefined);
       else if (overlay) shell.setOverlay(false);
     };
     window.addEventListener("keydown", onKeyDown);
@@ -45,9 +75,11 @@ export function Toolbar({ apps, settings, shell }: { apps: MountedApp[]; setting
       data-peek={flag(peek)}
       data-open={flag(open !== undefined)}
       data-overlay={flag(overlay)}
+      data-picking={flag(picking)}
       onMouseLeave={() => setPeek(false)}
     >
       <Overlay open={overlay} onClose={() => shell.setOverlay(false)} />
+      {picking && <Picker host={host} onPick={pick} />}
       {apps.map((app) => (
         <Window key={app.id} app={app} open={open === app.id} onClose={() => shell.setOpen(undefined)} />
       ))}
@@ -56,10 +88,16 @@ export function Toolbar({ apps, settings, shell }: { apps: MountedApp[]; setting
         {apps.map((app, index) => (
           <Fragment key={app.id}>
             {/* The last app (Settings) sits apart from the rest, as in Astro's
-                toolbar, next to the full screen button. */}
+                toolbar, next to the select and full screen buttons. */}
             {index === apps.length - 1 && (
               <>
                 {apps.length > 1 && <div className="separator" />}
+                <BarButton
+                  label="Select element"
+                  icon={icons.select}
+                  pressed={picking}
+                  onClick={() => shell.setPicking(!picking)}
+                />
                 <BarButton
                   label="Full screen"
                   icon={icons.fullscreen}
@@ -78,8 +116,27 @@ export function Toolbar({ apps, settings, shell }: { apps: MountedApp[]; setting
           </Fragment>
         ))}
       </div>
+      {toast && (
+        <div key={toast.id} className="toast" role="status" data-error={flag(toast.error ?? false)}>
+          {toast.text}
+        </div>
+      )}
     </div>
   );
+}
+
+type Toast = { text: string; error?: boolean };
+
+/** A message above the bar for a couple of seconds. Showing another replaces it. */
+function useToast() {
+  const [toast, setToast] = useState<Toast & { id: number }>();
+  useEffect(() => {
+    if (!toast) return;
+    const timer = setTimeout(() => setToast(undefined), 2000);
+    return () => clearTimeout(timer);
+  }, [toast]);
+  const show = useCallback((next: Toast) => setToast((last) => ({ ...next, id: (last?.id ?? 0) + 1 })), []);
+  return [toast, show] as const;
 }
 
 function BarButton(props: { label: string; icon: string; pressed: boolean; badge?: boolean; onClick: () => void }) {

@@ -40,6 +40,33 @@ is kept across changes.
 
 Large objects show their first 200 entries, then "… _n_ more".
 
+## Select element
+
+Not an app, but a button next to Settings. Press it, then click anything on the page to copy what an agent needs to
+find it in the source:
+
+```
+<h2>
+  Project: Website
+</h2>
+  in ProjectHeader (at src/pages/project.tsx:10)
+  in ProjectLayout (at src/pages/project.tsx:16)
+  in OrgLayout (at src/pages/org.tsx:18)
+
+Spock route: org.project.settings at /acme/projects/web/settings
+  params: orgId=acme, projectId=web
+  data (store paths): root → (root); org → orgs.acme; org.project → orgs.acme.projects.web
+```
+
+That's the element's HTML; the app's components that rendered it, innermost first, with the file and line of each;
+and the current route, its params, and the store path of each bound route's node. Paths are relative to the app's
+root, or absolute for files outside it, like workspace packages.
+
+While you're picking, the element under the cursor is highlighted and labelled with its component, and clicks don't
+reach the page. Press <kbd>Esc</kbd> or the button again to stop.
+
+Finding components and source lines uses [React Grab](https://github.com/aidenybai/react-grab)'s primitives.
+
 ## Settings
 
 | Setting           | What it does                                                                     |

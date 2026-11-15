@@ -11,6 +11,7 @@ In dev, a bar of apps appears at the bottom of the page:
 - **[State](/toolbar/apps/#state)** shows the store as a live tree, opened down to the nodes the current routes are
   bound to.
 - **[Settings](/toolbar/apps/#settings)** moves or hides the bar.
+- **[Select element](/toolbar/apps/#select-element)** copies an element's component, source and route, for an agent.
 
 ## Setup
 

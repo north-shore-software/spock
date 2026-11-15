@@ -10,7 +10,8 @@
     "typecheck": "tsc -b"
   },
   "dependencies": {
-    "@spock/router": "workspace:*"
+    "@spock/router": "workspace:*",
+    "react-grab": "0.2.0"
   },
   "peerDependencies": {
     "react": "^19.3.1",

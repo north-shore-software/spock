@@ -41,5 +41,5 @@ export function mountToolbar(apps: ToolbarApp[], settings: SettingsStore): void 
   const container = document.createElement("div");
   shadow.append(style, container);
   document.body.append(element);
-  createRoot(container).render(<Toolbar apps={mounted} settings={settings} shell={shell} />);
+  createRoot(container).render(<Toolbar apps={mounted} settings={settings} shell={shell} host={element} />);
 }
