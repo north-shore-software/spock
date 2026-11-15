@@ -4,14 +4,18 @@
 import { createRootRoute, createRoute, createRouter } from "@tanstack/react-router";
 import * as b from "./data/bindings";
 import { NotFound, RootLayout } from "./pages/root";
-import { OrgHome, OrgLayout } from "./pages/org";
+import { Members, OrgHome, OrgLayout } from "./pages/org";
+import { ProjectLayout, ProjectOverview, ProjectSettings } from "./pages/project";
+import { DocumentPage } from "./pages/document";
 
+// root — bound: whole store
 const rootRoute = createRootRoute({
   component: RootLayout,
   notFoundComponent: NotFound,
   beforeLoad: b.root,
 });
 
+// org /$orgId — bound: org
 const orgRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "$orgId",
@@ -19,13 +23,66 @@ const orgRoute = createRoute({
   beforeLoad: b.org,
 });
 
+// org-home /$orgId/ — inherits org
 const orgHomeRoute = createRoute({
   getParentRoute: () => orgRoute,
   path: "/",
   component: OrgHome,
 });
 
-const routeTree = rootRoute.addChildren([orgRoute.addChildren([orgHomeRoute])]);
+// members /$orgId/members — inherits org
+const membersRoute = createRoute({
+  getParentRoute: () => orgRoute,
+  path: "members",
+  component: Members,
+});
+
+// project /$orgId/projects/$projectId — bound: project
+const projectRoute = createRoute({
+  getParentRoute: () => orgRoute,
+  path: "projects/$projectId",
+  component: ProjectLayout,
+  beforeLoad: b.project,
+});
+
+// project-overview …/ — inherits project
+const projectOverviewRoute = createRoute({
+  getParentRoute: () => projectRoute,
+  path: "/",
+  component: ProjectOverview,
+});
+
+// project-settings …/settings — inherits project
+const projectSettingsRoute = createRoute({
+  getParentRoute: () => projectRoute,
+  path: "settings",
+  component: ProjectSettings,
+});
+
+// document …/docs/$documentId — bound: document
+const documentRoute = createRoute({
+  getParentRoute: () => projectRoute,
+  path: "docs/$documentId",
+  component: DocumentPage,
+  beforeLoad: b.document,
+});
+
+// share-link /d/$orgId/$projectId/$documentId — bound: document (many-to-one)
+const shareLinkRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "d/$orgId/$projectId/$documentId",
+  component: DocumentPage,
+  beforeLoad: b.document,
+});
+
+const routeTree = rootRoute.addChildren([
+  orgRoute.addChildren([
+    orgHomeRoute,
+    membersRoute,
+    projectRoute.addChildren([projectOverviewRoute, projectSettingsRoute, documentRoute]),
+  ]),
+  shareLinkRoute,
+]);
 
 export const router = createRouter({ routeTree });
 

@@ -6,7 +6,7 @@ import { NodeBox } from "./node-box";
 export function RootLayout() {
   const store = useData<Store>();
   return (
-    <NodeBox route="root" node="store">
+    <NodeBox node="store">
       <nav>
         {Object.values(store.orgs).map((org) => (
           <Link key={org.id} to="/$orgId" params={{ orgId: org.id }}>

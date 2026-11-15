@@ -7,3 +7,12 @@ import { store } from "./store";
 export const root = bind(() => store);
 
 export const org = bind((p: { orgId: string }) => store.orgs[p.orgId]);
+
+export const project = bind(
+  (p: { orgId: string; projectId: string }) => store.orgs[p.orgId]?.projects[p.projectId],
+);
+
+export const document = bind(
+  (p: { orgId: string; projectId: string; documentId: string }) =>
+    store.orgs[p.orgId]?.projects[p.projectId]?.documents[p.documentId],
+);

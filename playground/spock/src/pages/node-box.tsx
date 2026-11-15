@@ -1,11 +1,16 @@
+import { useMatch } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
-/** A labelled frame, so you can see which route rendered which node. */
-export function NodeBox(props: { route: string; node: string; children?: ReactNode }) {
+/**
+ * A labelled frame showing which route rendered it and which node it got.
+ * The route id comes from the nearest match, the same one `useData()` reads.
+ */
+export function NodeBox(props: { node: string; children?: ReactNode }) {
+  const routeId = useMatch({ strict: false, select: (m) => m.routeId });
   return (
     <section className="node-box">
       <header>
-        <code>{props.route}</code> → <code>{props.node}</code>
+        <code>{routeId}</code> → <code>{props.node}</code>
       </header>
       {props.children}
     </section>
