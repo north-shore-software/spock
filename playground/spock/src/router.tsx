@@ -1,78 +1,56 @@
-// The route tree. Every route is declared here, code-based (no file routes).
-// Routes with `beforeLoad: b.x` are bound to a data node; routes without it
-// inherit the nearest bound ancestor's node through route context.
+// Builds the router from the route table in routes.ts. Each route is one
+// create call with literal types so TanStack can infer paths, params and
+// context; the nesting here must match each entry's `parent`.
 import { createRootRoute, createRoute, createRouter } from "@tanstack/react-router";
-import * as b from "./data/bindings";
-import { NotFound, RootLayout } from "./pages/root";
-import { Members, OrgHome, OrgLayout } from "./pages/org";
-import { ProjectLayout, ProjectOverview, ProjectSettings } from "./pages/project";
-import { DocumentPage } from "./pages/document";
+import { routes } from "./routes";
 
-// root — bound: whole store
-export const rootRoute = createRootRoute({
-  component: RootLayout,
-  notFoundComponent: NotFound,
-  beforeLoad: b.root,
-});
+/** Drops the table-only `parent` field before handing options to TanStack. */
+function opts<T extends { parent: string }>(entry: T): Omit<T, "parent"> {
+  const { parent, ...options } = entry;
+  void parent;
+  return options;
+}
 
-// org /$orgId — bound: org
+// Bound routes repeat `beforeLoad` as an explicit property after the spread.
+// Only a direct property is checked against the route's path params; through
+// a spread, TanStack infers params from the binding instead, so binding a
+// route that lacks a needed param would compile (see bind.ts).
+const { root, org, orgHome, members, project, projectOverview, projectSettings } = routes;
+const { document, shareLink } = routes;
+
+export const rootRoute = createRootRoute({ ...root, beforeLoad: root.beforeLoad });
+
 export const orgRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "$orgId",
-  component: OrgLayout,
-  beforeLoad: b.org,
+  ...opts(org),
+  beforeLoad: org.beforeLoad,
 });
+export const orgHomeRoute = createRoute({ getParentRoute: () => orgRoute, ...opts(orgHome) });
+export const membersRoute = createRoute({ getParentRoute: () => orgRoute, ...opts(members) });
 
-// org-home /$orgId/ — inherits org
-export const orgHomeRoute = createRoute({
-  getParentRoute: () => orgRoute,
-  path: "/",
-  component: OrgHome,
-});
-
-// members /$orgId/members — inherits org
-export const membersRoute = createRoute({
-  getParentRoute: () => orgRoute,
-  path: "members",
-  component: Members,
-});
-
-// project /$orgId/projects/$projectId — bound: project
 export const projectRoute = createRoute({
   getParentRoute: () => orgRoute,
-  path: "projects/$projectId",
-  component: ProjectLayout,
-  beforeLoad: b.project,
+  ...opts(project),
+  beforeLoad: project.beforeLoad,
 });
-
-// project-overview …/ — inherits project
 export const projectOverviewRoute = createRoute({
   getParentRoute: () => projectRoute,
-  path: "/",
-  component: ProjectOverview,
+  ...opts(projectOverview),
 });
-
-// project-settings …/settings — inherits project
 export const projectSettingsRoute = createRoute({
   getParentRoute: () => projectRoute,
-  path: "settings",
-  component: ProjectSettings,
+  ...opts(projectSettings),
 });
-
-// document …/docs/$documentId — bound: document
 const documentRoute = createRoute({
   getParentRoute: () => projectRoute,
-  path: "docs/$documentId",
-  component: DocumentPage,
-  beforeLoad: b.document,
+  ...opts(document),
+  beforeLoad: document.beforeLoad,
 });
 
-// share-link /d/$orgId/$projectId/$documentId — bound: document (many-to-one)
 const shareLinkRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "d/$orgId/$projectId/$documentId",
-  component: DocumentPage,
-  beforeLoad: b.document,
+  ...opts(shareLink),
+  beforeLoad: shareLink.beforeLoad,
 });
 
 const routeTree = rootRoute.addChildren([
