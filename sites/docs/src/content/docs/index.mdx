@@ -14,6 +14,21 @@ hero:
       variant: minimal
 ---
 
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
 :::caution
 Spock is experimental. Things that exist are probably broken, and if they're not, they might be tomorrow.
 :::
+
+<CardGrid>
+	<LinkCard
+		title="@spock/router"
+		description="A typed route tree with data bindings. Pages say what shape of data they need, and the type checker makes sure each one fits where it's placed."
+		href="/router/"
+	/>
+	<LinkCard
+		title="@spock/toolbar"
+		description="A dev toolbar for Spock apps. It shows the matched routes, where each got its data, and the store as a live tree."
+		href="/toolbar/"
+	/>
+</CardGrid>

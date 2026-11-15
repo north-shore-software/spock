@@ -12,9 +12,11 @@ export default defineConfig({
 			social: [
 				{ icon: 'github', label: 'GitHub', href: 'https://github.com/north-shore-software/spock' },
 			],
+			// One group per package. Pages in each are ordered by `sidebar.order` in their frontmatter.
 			sidebar: [
 				{ label: 'Start here', items: [{ slug: 'getting-started' }] },
-				{ label: 'Packages', items: [{ autogenerate: { directory: 'packages' } }] },
+				{ label: '@spock/router', items: [{ autogenerate: { directory: 'router' } }] },
+				{ label: '@spock/toolbar', items: [{ autogenerate: { directory: 'toolbar' } }] },
 			],
 		}),
 	],
