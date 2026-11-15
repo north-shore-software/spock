@@ -32,6 +32,11 @@ button {
   color: inherit;
 }
 
+/* Wraps an icon's SVG markup; lays out as if the SVG were bare. */
+.icon {
+  display: contents;
+}
+
 code {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   font-size: 12px;

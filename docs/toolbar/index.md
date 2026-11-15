@@ -49,5 +49,6 @@ so if your app lives outside the workspace, add the package to
 
 ## When the app breaks
 
-The toolbar is plain DOM in a shadow root, not React. The page's styles can't reach it, and it keeps working when the
-app's render throws, so you can still see which route failed and what data it had.
+The toolbar is its own React root in a shadow root, separate from the app's. The page's styles can't reach it, and it
+keeps working when the app's render throws, so you can still see which route failed and what data it had. It uses the
+app's copy of React, so it adds nothing to the page.

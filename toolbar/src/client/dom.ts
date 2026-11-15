@@ -1,5 +1,5 @@
-// A tiny element builder, so the toolbar needs no UI framework and never
-// shares one with the app it's inspecting.
+// A tiny element builder for the apps' panels, which are still plain DOM.
+// The toolbar around them is React (toolbar.tsx).
 
 type Prop = string | number | boolean | undefined | ((event: Event) => void);
 export type Child = Node | string | number | null | undefined | false;
