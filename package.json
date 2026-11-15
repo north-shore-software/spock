@@ -2,6 +2,7 @@
   "name": "spock-workspace",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@11.3.0",
   "scripts": {
     "dev": "pnpm --filter @spock/simple dev",
     "dev:docs": "pnpm --filter @spock/docs dev",
