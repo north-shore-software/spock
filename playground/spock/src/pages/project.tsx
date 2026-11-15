@@ -1,5 +1,5 @@
 import { Link, Outlet } from "@tanstack/react-router";
-import { useData } from "../data/use-data";
+import { useData, useDataProxy } from "../data/use-data";
 import type { Project } from "../data/store";
 import { NodeBox } from "./node-box";
 
@@ -54,13 +54,25 @@ export function ProjectOverview() {
   );
 }
 
-// Placeholder: the name input that writes through useDataProxy comes next.
 export function ProjectSettings() {
-  const project = useData<Project>();
+  // Writes go through the live proxy; reads through a snapshot.
+  // `sync: true` re-renders synchronously, so the caret doesn't jump.
+  const proxy = useDataProxy<Project>();
+  const project = useData<Project>({ sync: true });
   return (
     <NodeBox node={`projects.${project.id}`}>
       <h3>Settings</h3>
-      <p>Name: {project.name}</p>
+      <label>
+        Name{" "}
+        <input
+          value={project.name}
+          onChange={(e) => {
+            // valtio proxies exist to be mutated; the rule assumes hook results are immutable.
+            // oxlint-disable-next-line react/immutability
+            proxy.name = e.target.value;
+          }}
+        />
+      </label>
     </NodeBox>
   );
 }

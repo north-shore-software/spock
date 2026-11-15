@@ -13,8 +13,10 @@ export type DataBinding<T> = { select: () => T };
  * Builds a `beforeLoad` function that binds a route to one data-tree node.
  *
  * `select` picks the node from the route's params. If the node is missing at
- * navigation time we throw `notFound()`; if it disappears later, while the
- * page is showing, `select()` throws an ordinary Error for the error boundary.
+ * navigation time we throw `notFound()`. If it disappears later, `select()`
+ * throws an ordinary Error for the error boundary, but only on a re-render
+ * that deletion itself won't trigger. Records must not be deleted or replaced
+ * while viewing; see the rule in store.ts.
  *
  * The returned function is generic (`Q extends P`) on purpose. With a
  * concrete `{ params: P }` parameter, `createRoute` infers its params type
@@ -31,6 +33,7 @@ export function bind<P extends object, T extends object>(
       data: {
         select: () => {
           const node = select(params);
+          // Guard only; deletion is not supported (see store.ts).
           if (!node) throw new Error("Record removed while viewing");
           return node;
         },

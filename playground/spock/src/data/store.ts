@@ -3,10 +3,18 @@ import { proxy } from "valtio";
 // The data tree: shaped by the domain, not by the URLs.
 // Syncing with a database is out of scope; the store is seeded in memory.
 //
-// Assumption: records are mutated in place and never replaced. A binding's
-// selector re-resolves its node at render time, but `useSnapshot` subscribes
-// to the proxy it was given, so a replaced record would not be noticed until
-// something else re-renders the component. Revisit in a later step.
+// RULE: records are mutated in place. Never delete or replace a record
+// (an org, project or document) while the app is running.
+//
+// Why: `useData()` subscribes to the node's own proxy, the one its binding
+// found at render time. Deleting or replacing a record changes its *parent*
+// (e.g. `project.documents`), which that subscription doesn't see. The page
+// keeps showing the old record, and the "Record removed while viewing" error
+// in bind.ts only fires if something else happens to re-render it.
+//
+// Lifting this rule means subscribing to the path from the store root instead
+// of the node, e.g. by running the binding's selector against
+// `useSnapshot(store)` so valtio tracks every step of the path.
 
 export type Document = {
   id: string;
