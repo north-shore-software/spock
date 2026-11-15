@@ -1,18 +1,16 @@
-import { Link, Outlet } from "@tanstack/react-router";
-import { useDataFor } from "@spock/core";
-import { membersRoute, orgHomeRoute, orgRoute } from "../router";
+import { Link, Outlet, useData } from "@spock/core";
 import { NodeBox } from "./node-box";
 
 export function OrgLayout() {
-  const org = useDataFor(orgRoute);
+  const org = useData("org");
   return (
     <NodeBox node={`orgs.${org.id}`}>
       <h1>{org.name}</h1>
       <nav>
-        <Link to="/$orgId" params={{ orgId: org.id }} activeOptions={{ exact: true }}>
+        <Link to="org.home" params={{ orgId: org.id }} exact>
           Home
         </Link>
-        <Link to="/$orgId/members" params={{ orgId: org.id }}>
+        <Link to="org.members" params={{ orgId: org.id }}>
           Members
         </Link>
       </nav>
@@ -22,14 +20,14 @@ export function OrgLayout() {
 }
 
 export function OrgHome() {
-  const org = useDataFor(orgHomeRoute);
+  const org = useData("org.home");
   return (
     <NodeBox node={`orgs.${org.id}`}>
       <h2>Projects</h2>
       <ul>
         {Object.values(org.projects).map((p) => (
           <li key={p.id}>
-            <Link to="/$orgId/projects/$projectId" params={{ orgId: org.id, projectId: p.id }}>
+            <Link to="org.project" params={{ orgId: org.id, projectId: p.id }}>
               {p.name}
             </Link>
           </li>
@@ -40,7 +38,7 @@ export function OrgHome() {
 }
 
 export function Members() {
-  const org = useDataFor(membersRoute);
+  const org = useData("org.members");
   return (
     <NodeBox node={`orgs.${org.id}`}>
       <h2>Members</h2>

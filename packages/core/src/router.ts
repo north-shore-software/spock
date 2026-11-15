@@ -1,26 +1,90 @@
-// Helpers for turning a route table into TanStack routes.
+// Builds a TanStack router from a route tree. TanStack is an implementation
+// detail: its types are bypassed (routes are built in a loop, so it can't
+// infer them), and the tree's own types in types.ts are what apps see.
+import {
+  createRootRoute,
+  createRoute,
+  createRouter as createTanStackRouter,
+  notFound,
+  type AnyRoute,
+  type AnyRouter,
+} from "@tanstack/react-router";
+import type { CheckTree, RouteDef, Selector } from "./types";
+
+/** What a route puts into TanStack's route context under `data`. */
+export type DataBinding = { select: () => object };
+
+/** Stored in each TanStack route's `staticData`, so matches can be named. */
+export type RouteMeta = { name: string };
+
+export type Router<T extends RouteDef = RouteDef> = {
+  /** @internal */
+  readonly tanstack: AnyRouter;
+  /** @internal Full TanStack path for each route name, used by `Link`. */
+  readonly paths: ReadonlyMap<string, string>;
+  /** Type-only: the tree this router was built from. */
+  readonly tree?: T;
+};
 
 /**
- * Builds `createRoute` options for a route-table entry nested under `parent`:
- * adds `getParentRoute` and drops the table-only `parent` field.
- *
- *     createRoute(under(orgRoute, routes.members))
- *
- * This returns options rather than wrapping `createRoute`. Inside a generic
- * wrapper, TanStack can't check `beforeLoad` against the route's path params,
- * so a binding that needs a param the path lacks would compile.
- *
- * For the same reason, bound routes must repeat `beforeLoad` as a direct
- * property after the spread. Through the spread, TanStack infers params from
- * the binding instead of the path (see bind.ts):
- *
- *     createRoute({ ...under(rootRoute, routes.org), beforeLoad: routes.org.beforeLoad })
+ * Builds the router. Route names come from the tree keys (`org.members`);
+ * params come from the paths; each route's data node is its own `data`
+ * selector's result, or its nearest bound ancestor's.
  */
-export function under<TParent, T extends { parent: string }>(
-  parent: TParent,
-  entry: T,
-): { getParentRoute: () => TParent } & Omit<T, "parent"> {
-  const { parent: _, ...options } = entry;
-  void _;
-  return { getParentRoute: () => parent, ...options };
+export function createRouter<const T extends RouteDef>(tree: T & CheckTree<T>): Router<T> {
+  const named: [string, AnyRoute][] = [];
+  const root = createRootRoute({
+    component: tree.component,
+    notFoundComponent: tree.notFound,
+    beforeLoad: tree.data && bindData(tree.data),
+    staticData: { name: "root" } satisfies RouteMeta,
+  });
+  named.push(["root", root]);
+  addChildren(root, tree.children, "");
+  const tanstack = createTanStackRouter({ routeTree: root });
+  // TanStack computes each route's fullPath when the router is created.
+  const paths = new Map(named.map(([name, route]) => [name, route.fullPath as string]));
+  return { tanstack, paths };
+
+  function addChildren(parent: AnyRoute, children: Record<string, RouteDef> | undefined, prefix: string) {
+    if (!children) return;
+    parent.addChildren(
+      Object.entries(children).map(([key, def]) => {
+        const name = prefix + key;
+        const route = createRoute({
+          getParentRoute: () => parent,
+          // Without a path it's a pathless layout, identified by its name.
+          ...(def.path === undefined ? { id: name } : { path: def.path }),
+          component: def.component,
+          notFoundComponent: def.notFound,
+          beforeLoad: def.data && bindData(def.data),
+          staticData: { name } satisfies RouteMeta,
+        });
+        named.push([name, route]);
+        addChildren(route, def.children, `${name}.`);
+        return route;
+      }),
+    );
+  }
+}
+
+/**
+ * The `beforeLoad` for a bound route. It stores a selector, not the record:
+ * route context is computed on navigation, not when the store changes, so a
+ * stored proxy could go stale. The hooks call `select()` at render time.
+ */
+function bindData(select: Selector) {
+  return ({ params }: { params: object }): { data: DataBinding } => {
+    if (!select(params)) throw notFound();
+    return {
+      data: {
+        select: () => {
+          const node = select(params);
+          // Guard only; deletion is not supported (see `RouteDef.data`).
+          if (!node) throw new Error("Record removed while viewing");
+          return node;
+        },
+      },
+    };
+  };
 }

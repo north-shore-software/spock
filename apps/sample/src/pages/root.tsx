@@ -1,15 +1,13 @@
-import { Link, Outlet } from "@tanstack/react-router";
-import { useDataFor } from "@spock/core";
-import { rootRoute } from "../router";
+import { Link, Outlet, useData } from "@spock/core";
 import { NodeBox } from "./node-box";
 
 export function RootLayout() {
-  const store = useDataFor(rootRoute);
+  const store = useData("root");
   return (
     <NodeBox node="store">
       <nav>
         {Object.values(store.orgs).map((org) => (
-          <Link key={org.id} to="/$orgId" params={{ orgId: org.id }}>
+          <Link key={org.id} to="org" params={{ orgId: org.id }}>
             {org.name}
           </Link>
         ))}

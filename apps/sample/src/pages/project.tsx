@@ -1,6 +1,4 @@
-import { Link, Outlet } from "@tanstack/react-router";
-import { useData, useDataFor, useDataProxyFor } from "@spock/core";
-import { projectOverviewRoute, projectRoute, projectSettingsRoute } from "../router";
+import { Link, Outlet, useData, useDataProxy, useParams } from "@spock/core";
 import type { Project } from "../data/store";
 import { NodeBox } from "./node-box";
 
@@ -11,19 +9,16 @@ export function ProjectHeader() {
 }
 
 export function ProjectLayout() {
-  const project = useDataFor(projectRoute);
+  const project = useData("org.project");
+  const params = useParams("org.project");
   return (
     <NodeBox node={`projects.${project.id}`}>
       <ProjectHeader />
       <nav>
-        <Link
-          from="/$orgId/projects/$projectId"
-          to="/$orgId/projects/$projectId"
-          activeOptions={{ exact: true }}
-        >
+        <Link to="org.project.overview" params={params} exact>
           Overview
         </Link>
-        <Link from="/$orgId/projects/$projectId" to="/$orgId/projects/$projectId/settings">
+        <Link to="org.project.settings" params={params}>
           Settings
         </Link>
       </nav>
@@ -33,19 +28,16 @@ export function ProjectLayout() {
 }
 
 export function ProjectOverview() {
-  const project = useDataFor(projectOverviewRoute);
+  const project = useData("org.project.overview");
+  const params = useParams("org.project.overview");
   return (
     <NodeBox node={`projects.${project.id}`}>
       <h3>Documents</h3>
       <ul>
         {Object.values(project.documents).map((d) => (
           <li key={d.id}>
-            {/* Adds documentId to the current params; no org/project ids here. */}
-            <Link
-              from="/$orgId/projects/$projectId/"
-              to="/$orgId/projects/$projectId/docs/$documentId"
-              params={(prev) => ({ ...prev, documentId: d.id })}
-            >
+            {/* Reuses this route's params and adds the document id. */}
+            <Link to="org.project.document" params={{ ...params, documentId: d.id }}>
               {d.title}
             </Link>
           </li>
@@ -58,8 +50,8 @@ export function ProjectOverview() {
 export function ProjectSettings() {
   // Writes go through the live proxy; reads through a snapshot.
   // `sync: true` re-renders synchronously, so the caret doesn't jump.
-  const proxy = useDataProxyFor(projectSettingsRoute);
-  const project = useDataFor(projectSettingsRoute, { sync: true });
+  const proxy = useDataProxy("org.project.settings");
+  const project = useData("org.project.settings", { sync: true });
   return (
     <NodeBox node={`projects.${project.id}`}>
       <h3>Settings</h3>

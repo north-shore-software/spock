@@ -7,13 +7,16 @@
 type system tell a project id from a document id, and from any other string.
 
 **How it would fit.** This was checked against the installed router
-(1.170.46), not just assumed.
+(1.170.46), not just assumed, before `@spock/core` wrapped TanStack. Core's
+route tree has no `params` option yet, so step 3 means adding one and passing
+it through to TanStack, and `CheckTree` would check selectors against the
+parsed types instead of `string`.
 
 1. **Domain types.** Brand the ids in `store.ts`:
    `Project = { id: ProjectId; … }` and
    `Org.projects: Record<ProjectId, Project>`.
-2. **Bindings.** Bindings declare the branded param types:
-   `bind((p: { orgId: OrgId; projectId: ProjectId }) => …)`.
+2. **Bindings.** Selectors declare the branded param types:
+   `(p: { orgId: OrgId; projectId: ProjectId }) => …`.
 3. **Routes.** Each route that introduces a param converts it into the brand
    with `params.parse`, and back with `params.stringify`:
    ```ts
@@ -30,8 +33,8 @@ type system tell a project id from a document id, and from any other string.
 - **A binding on an unparsed route doesn't compile.** If a route binds a
   project but doesn't parse `$projectId`, its `projectId` is a plain `string`,
   and the binding is rejected with "Type 'string' is not assignable to type
-  'ProjectId'". The generic `bind()` gives us this for free: the route keeps
-  the params it declares, so the error shows up where the binding is attached.
+  'ProjectId'". The tree check gives us this for free: each route's params
+  come from its path, so the error shows up where the selector is attached.
   Branding extends rule 4 from "the param exists" to "the param was parsed".
 - **`Link` needs branded values too.** `params={{ projectId }}` must be a
   `ProjectId`. Links built from records (`p.id`), and links that spread
@@ -44,6 +47,6 @@ type system tell a project id from a document id, and from any other string.
   cast it. Either way, it should not look the record up: missing records are
   the binding's job (`notFound()` in `beforeLoad`).
 - **Where to put parse/stringify.** Keep the pairs next to the brand types,
-  e.g. a `projectIdParam` helper, so `router.tsx` doesn't repeat them.
+  e.g. a `projectIdParam` helper, so `router.ts` doesn't repeat them.
 - **Shared params.** The share-link route introduces all three params at once,
   so it would parse all three.

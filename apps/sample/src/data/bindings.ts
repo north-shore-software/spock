@@ -1,20 +1,16 @@
-// Every route-to-data binding lives here. Routes attach them via `beforeLoad`.
-// The store is imported here rather than put in router context, so routes
-// only ever see the node their binding selects.
-// Params are plain strings for now; see NOTES.md at the
-// repo root for how branded ids would fit.
-import { bind } from "@spock/core";
+// Every route-to-data binding: a selector from route params to a node.
+// router.ts attaches them with `data:`; a route whose path lacks a param its
+// selector needs is a type error there.
+// Params are plain strings for now; see NOTES.md at the repo root for how
+// branded ids would fit.
 import { store } from "./store";
 
-export const root = bind(() => store);
+export const root = () => store;
 
-export const org = bind((p: { orgId: string }) => store.orgs[p.orgId]);
+export const org = (p: { orgId: string }) => store.orgs[p.orgId];
 
-export const project = bind(
-  (p: { orgId: string; projectId: string }) => store.orgs[p.orgId]?.projects[p.projectId],
-);
+export const project = (p: { orgId: string; projectId: string }) =>
+  store.orgs[p.orgId]?.projects[p.projectId];
 
-export const document = bind(
-  (p: { orgId: string; projectId: string; documentId: string }) =>
-    store.orgs[p.orgId]?.projects[p.projectId]?.documents[p.documentId],
-);
+export const document = (p: { orgId: string; projectId: string; documentId: string }) =>
+  store.orgs[p.orgId]?.projects[p.projectId]?.documents[p.documentId];
