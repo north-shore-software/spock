@@ -1,43 +1,40 @@
-import { Link, Outlet, useData, useDataProxy, useParams } from "@spock/router";
+import { Link, node, Outlet } from "@spock/router";
 import type { Project } from "../data/store";
 import { NodeBox } from "./node-box";
 
-/** Portable: works under any route bound to a project. */
+const { page, useData, useDataProxy } = node<Project>();
+
+/** Portable: works under any route bound to a project. Not a page, so not checked by the tree. */
 export function ProjectHeader() {
-  const project = useData<Project>();
+  const project = useData();
   return <h2>Project: {project.name}</h2>;
 }
 
-export function ProjectLayout() {
-  const project = useData("org.project");
-  const params = useParams("org.project");
+export const ProjectLayout = page(function ProjectLayout() {
   return (
-    <NodeBox node={`projects.${project.id}`}>
+    <NodeBox>
       <ProjectHeader />
       <nav>
-        <Link to="org.project.overview" params={params} exact>
+        <Link to="org.project.overview" exact>
           Overview
         </Link>
-        <Link to="org.project.settings" params={params}>
-          Settings
-        </Link>
+        <Link to="org.project.settings">Settings</Link>
       </nav>
       <Outlet />
     </NodeBox>
   );
-}
+});
 
-export function ProjectOverview() {
-  const project = useData("org.project.overview");
-  const params = useParams("org.project.overview");
+export const ProjectOverview = page(function ProjectOverview() {
+  const project = useData();
   return (
-    <NodeBox node={`projects.${project.id}`}>
+    <NodeBox>
       <h3>Documents</h3>
       <ul>
         {Object.values(project.documents).map((d) => (
           <li key={d.id}>
-            {/* Reuses this route's params and adds the document id. */}
-            <Link to="org.project.document" params={{ ...params, documentId: d.id }}>
+            {/* Keeps this route's orgId and projectId; adds the document id. */}
+            <Link to="org.project.document" params={{ documentId: d.id }}>
               {d.title}
             </Link>
           </li>
@@ -45,15 +42,15 @@ export function ProjectOverview() {
       </ul>
     </NodeBox>
   );
-}
+});
 
-export function ProjectSettings() {
+export const ProjectSettings = page(function ProjectSettings() {
   // Writes go through the live proxy; reads through a snapshot.
   // `sync: true` re-renders synchronously, so the caret doesn't jump.
-  const proxy = useDataProxy("org.project.settings");
-  const project = useData("org.project.settings", { sync: true });
+  const proxy = useDataProxy();
+  const project = useData({ sync: true });
   return (
-    <NodeBox node={`projects.${project.id}`}>
+    <NodeBox>
       <h3>Settings</h3>
       <label>
         Name{" "}
@@ -68,4 +65,4 @@ export function ProjectSettings() {
       </label>
     </NodeBox>
   );
-}
+});

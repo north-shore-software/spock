@@ -11,8 +11,11 @@ import {
 } from "@tanstack/react-router";
 import type { CheckTree, RouteDef, Selector } from "./types";
 
-/** What a route puts into TanStack's route context under `data`. */
-export type DataBinding = { select: () => object };
+/**
+ * What a bound route puts into TanStack's route context under `data`.
+ * Unbound children inherit it, so `boundAt` names the route it came from.
+ */
+export type DataBinding = { select: () => object; boundAt: string };
 
 /** Stored in each TanStack route's `staticData`, so matches can be named. */
 export type RouteMeta = { name: string };
@@ -36,7 +39,7 @@ export function createRouter<const T extends RouteDef>(tree: T & CheckTree<T>): 
   const root = createRootRoute({
     component: tree.component,
     notFoundComponent: tree.notFound,
-    beforeLoad: tree.data && bindData(tree.data),
+    beforeLoad: tree.data && bindData(tree.data, "root"),
     staticData: { name: "root" } satisfies RouteMeta,
   });
   named.push(["root", root]);
@@ -57,7 +60,7 @@ export function createRouter<const T extends RouteDef>(tree: T & CheckTree<T>): 
           ...(def.path === undefined ? { id: name } : { path: def.path }),
           component: def.component,
           notFoundComponent: def.notFound,
-          beforeLoad: def.data && bindData(def.data),
+          beforeLoad: def.data && bindData(def.data, name),
           staticData: { name } satisfies RouteMeta,
         });
         named.push([name, route]);
@@ -73,11 +76,12 @@ export function createRouter<const T extends RouteDef>(tree: T & CheckTree<T>): 
  * route context is computed on navigation, not when the store changes, so a
  * stored proxy could go stale. The hooks call `select()` at render time.
  */
-function bindData(select: Selector) {
+function bindData(select: Selector, boundAt: string) {
   return ({ params }: { params: object }): { data: DataBinding } => {
     if (!select(params)) throw notFound();
     return {
       data: {
+        boundAt,
         select: () => {
           const node = select(params);
           // Guard only; deletion is not supported (see `RouteDef.data`).

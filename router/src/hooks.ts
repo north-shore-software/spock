@@ -1,8 +1,11 @@
-// Data and params hooks, addressed by route name. Types come from the app's registered router (see `Register`).
-import { useMatch, useMatches } from "@tanstack/react-router";
+// Data hooks. They take no route name: a component reads the route that
+// rendered it, so its position in the tree decides what it sees. Pages
+// declare the node shape they need with `node<T>()`, and the route tree
+// checks that each page is placed on a route whose node fits (see `Page`).
+import { useMatch } from "@tanstack/react-router";
 import { useSnapshot, type Snapshot } from "valtio";
 import type { DataBinding, RouteMeta, Router } from "./router";
-import type { Entries } from "./types";
+import type { Entries, Page, RouteComponent } from "./types";
 
 /**
  * Register the app's router to type route names, params and data:
@@ -29,54 +32,63 @@ export type NodeOf<N extends RouteName> = EntryOf<N>["node"];
 
 type SnapshotOptions = { sync?: boolean };
 
-const nameOf = (match: { staticData: unknown }) => (match.staticData as RouteMeta).name;
-
-/** The active match for `name`, or the nearest match when `name` is omitted. */
-function useRouteMatch(name: string | undefined, hook: string) {
-  // Both hooks run unconditionally; `name` decides which result is used.
-  const nearest = useMatch({ strict: false });
-  const named = useMatches({
-    select: (matches) => (name === undefined ? undefined : matches.find((m) => nameOf(m) === name)),
-  });
-  const match = name === undefined ? nearest : named;
-  if (!match) throw new Error(`${hook}("${name}"): that route is not active`);
-  return match;
+/**
+ * The match of the route that rendered this component. A layout gets its own
+ * match even while a child route is showing.
+ */
+function useNearestMatch() {
+  return useMatch({ strict: false });
 }
 
-function selectData(match: { context: unknown }, hook: string): object {
-  const data = (match.context as { data?: DataBinding }).data;
+function useSelectedData(hook: string): object {
+  const data = (useNearestMatch().context as { data?: DataBinding }).data;
   if (!data) throw new Error(`${hook}: no data is bound to this route or its ancestors`);
   return data.select();
 }
 
+/** The live valtio proxy for this route's data node. Use it for writes. */
+export function useDataProxy<T extends object>(): T {
+  return useSelectedData("useDataProxy") as T;
+}
+
 /**
- * The live valtio proxy for a route's data node. Use it for writes.
+ * A read-only, reactive snapshot of this route's data node. Pass
+ * `{ sync: true }` for inputs, so the caret doesn't jump.
  *
- * With a name, it's typed from that route. Without one, it reads the route
- * that rendered this component (a layout gets its own node even while a
- * child route is showing), and you supply the type: portable components.
+ * `T` is the shape the component needs, not where it lives: nothing checks
+ * it at compile time. Pages should get these hooks from `node<T>()`, so the
+ * route tree can check the shape.
  */
-export function useDataProxy<N extends RouteName>(name: N): NodeOf<N>;
-export function useDataProxy<T extends object>(): T;
-export function useDataProxy(name?: string): object {
-  return selectData(useRouteMatch(name, "useDataProxy"), "useDataProxy");
+export function useData<T extends object>(options?: SnapshotOptions): Snapshot<T> {
+  return useSnapshot(useSelectedData("useData") as T, options);
 }
 
-/** A read-only, reactive snapshot of a route's data node. Named or nearest, as `useDataProxy`. */
-export function useData<N extends RouteName>(name: N, options?: SnapshotOptions): Snapshot<NodeOf<N>>;
-export function useData<T extends object>(options?: SnapshotOptions): Snapshot<T>;
-export function useData(nameOrOptions?: string | SnapshotOptions, options?: SnapshotOptions): object {
-  const name = typeof nameOrOptions === "string" ? nameOrOptions : undefined;
-  const opts = typeof nameOrOptions === "string" ? options : nameOrOptions;
-  return useSnapshot(selectData(useRouteMatch(name, "useData"), "useData"), opts);
+/**
+ * Hooks for components that need a node of shape `T`, plus `page`, which
+ * marks a route component as needing it. Name the shape, never the route:
+ *
+ *     const { page, useData } = node<Project>();
+ *     export const ProjectLayout = page(function ProjectLayout() {
+ *       const project = useData();
+ *       ...
+ *     });
+ *
+ * Placing a page on a route whose node doesn't fit `T` is a type error at
+ * that route's `component`.
+ */
+export function node<T extends object>() {
+  return {
+    page: (component: RouteComponent): Page<T> => component,
+    useData: useData<T>,
+    useDataProxy: useDataProxy<T>,
+  };
 }
 
-/** The params of an active route, its ancestors' included. */
-export function useParams<N extends RouteName>(name: N): ParamsOf<N> {
-  return useRouteMatch(name, "useParams").params as ParamsOf<N>;
-}
-
-/** The name of the route that rendered this component. */
-export function useRouteName(): RouteName {
-  return nameOf(useRouteMatch(undefined, "useRouteName")) as RouteName;
+/** Which route rendered this component, and which route's binding it got its node from. */
+export function useRouteInfo(): { name: RouteName; boundAt: RouteName | undefined } {
+  const match = useNearestMatch();
+  return {
+    name: (match.staticData as RouteMeta).name as RouteName,
+    boundAt: (match.context as { data?: DataBinding }).data?.boundAt as RouteName | undefined,
+  };
 }

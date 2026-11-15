@@ -1,33 +1,34 @@
-import { Link, Outlet, useData } from "@spock/router";
+import { Link, node, Outlet } from "@spock/router";
+import type { Org } from "../data/store";
 import { NodeBox } from "./node-box";
 
-export function OrgLayout() {
-  const org = useData("org");
+const { page, useData } = node<Org>();
+
+export const OrgLayout = page(function OrgLayout() {
+  const org = useData();
   return (
-    <NodeBox node={`orgs.${org.id}`}>
+    <NodeBox>
       <h1>{org.name}</h1>
       <nav>
-        <Link to="org.home" params={{ orgId: org.id }} exact>
+        <Link to="org.home" exact>
           Home
         </Link>
-        <Link to="org.members" params={{ orgId: org.id }}>
-          Members
-        </Link>
+        <Link to="org.members">Members</Link>
       </nav>
       <Outlet />
     </NodeBox>
   );
-}
+});
 
-export function OrgHome() {
-  const org = useData("org.home");
+export const OrgHome = page(function OrgHome() {
+  const org = useData();
   return (
-    <NodeBox node={`orgs.${org.id}`}>
+    <NodeBox>
       <h2>Projects</h2>
       <ul>
         {Object.values(org.projects).map((p) => (
           <li key={p.id}>
-            <Link to="org.project" params={{ orgId: org.id, projectId: p.id }}>
+            <Link to="org.project" params={{ projectId: p.id }}>
               {p.name}
             </Link>
           </li>
@@ -35,12 +36,12 @@ export function OrgHome() {
       </ul>
     </NodeBox>
   );
-}
+});
 
-export function Members() {
-  const org = useData("org.members");
+export const Members = page(function Members() {
+  const org = useData();
   return (
-    <NodeBox node={`orgs.${org.id}`}>
+    <NodeBox>
       <h2>Members</h2>
       <ul>
         {Object.values(org.members).map((m) => (
@@ -49,4 +50,4 @@ export function Members() {
       </ul>
     </NodeBox>
   );
-}
+});

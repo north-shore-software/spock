@@ -37,8 +37,8 @@ parsed types instead of `string`.
   come from its path, so the error shows up where the selector is attached.
   Branding extends rule 4 from "the param exists" to "the param was parsed".
 - **`Link` needs branded values too.** `params={{ projectId }}` must be a
-  `ProjectId`. Links built from records (`p.id`), and links that spread
-  `prev` params, just work once the domain types are branded. A hand-written
+  `ProjectId`. Links built from records (`p.id`), and params filled in from
+  the current route, just work once the domain types are branded. A hand-written
   literal like `"web"` needs a cast.
 
 **Open choices for later:**
@@ -50,3 +50,25 @@ parsed types instead of `string`.
   e.g. a `projectIdParam` helper, so `router.ts` doesn't repeat them.
 - **Shared params.** The share-link route introduces all three params at once,
   so it would parse all three.
+
+## Pages are checked by shape, not by route
+
+Components never name their route. A page says what node shape it needs
+(`node<Project>().page(...)`), and `CheckTree` checks each route's
+`component` against that route's node. What isn't checked:
+
+- **Portable components** (e.g. `ProjectHeader`) aren't in the tree, so a
+  `useData<T>()` inside one is trusted. It runs under whichever page renders it.
+- **`notFound` components** can render where a binding failed, so they get no
+  node and aren't tagged.
+
+## `Link` params are partial (open)
+
+`Link` merges the current route's params with the ones given, so a component
+only supplies new ids (`params={{ documentId: d.id }}`). Because a component
+doesn't know its route, the types can't know which params will be filled in:
+`params` is `Partial`, and a missing one throws when the link renders.
+
+**Longer term:** link to data nodes instead of routes (`<Link to={doc}>`),
+resolved by running the bindings in reverse. That would remove ids from
+components entirely and could be checked at compile time again.

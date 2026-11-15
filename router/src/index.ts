@@ -1,10 +1,10 @@
 export { createRouter, type Router } from "./router";
-export type { RouteComponent, RouteDef } from "./types";
+export type { Page, RouteComponent, RouteDef } from "./types";
 export {
+  node,
   useData,
   useDataProxy,
-  useParams,
-  useRouteName,
+  useRouteInfo,
   type NodeOf,
   type ParamsOf,
   type Register,

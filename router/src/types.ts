@@ -2,8 +2,20 @@
 // computed from the tree literal passed to `createRouter`.
 import type { ReactNode } from "react";
 
-/** A route component: renders with no props; reads data and params through hooks. */
+/** A route component: renders with no props; reads its data through hooks. */
 export type RouteComponent = () => ReactNode;
+
+declare const needs: unique symbol;
+
+/**
+ * A route component that needs its route's node to have shape `N`. Made with
+ * `node<N>().page(...)`; the tag exists only in types.
+ *
+ * The tag is a function taking `N`, so it's contravariant: a page that needs
+ * less than its route gives (`Page<{ name: string }>` on a project route)
+ * fits, and one that needs something else doesn't.
+ */
+export type Page<N extends object> = RouteComponent & { readonly [needs]?: (node: N) => void };
 
 /** Picks a route's data node from its params. `undefined` means "not found". */
 // oxlint-disable-next-line typescript/no-explicit-any -- any params type is allowed; `CheckTree` checks it.
@@ -54,16 +66,29 @@ type ChildEntries<C, Prefix extends string, Params extends string, Inherited> = 
 export type Entries<T> = EntriesOf<T, RootName, never, never>;
 
 /**
- * The shape each route must satisfy, given the params its ancestors and its
- * own path provide. A `data` selector that needs a param the route doesn't
- * have fails here, at that route's `data` property.
+ * What a route's component must be, given its node. An unbound route (no
+ * node) only takes untagged components, since a page there would throw.
+ * `notFound` components aren't checked: they can render where the binding failed.
  */
-type CheckRoute<R, Params extends string> = {
-  data?: (params: { [K in Params]: string }) => object | undefined;
-} & (R extends { children: infer C } ? { children: CheckChildren<C, Params> } : unknown);
+type ComponentFor<Node> = [Node] extends [never]
+  ? RouteComponent & { readonly [needs]?: undefined }
+  : Node extends object
+    ? Page<Node>
+    : never;
 
-type CheckChildren<C, Params extends string> = {
-  [K in keyof C]: CheckRoute<C[K], Params | PathParams<C[K] extends { path: infer P } ? P : never>>;
+/**
+ * The shape each route must satisfy, given the params its ancestors and its
+ * own path provide, and the node it inherits. A `data` selector that needs a
+ * param the route doesn't have fails here, at that route's `data` property;
+ * a page that needs a different node fails at its `component` property.
+ */
+type CheckRoute<R, Params extends string, Inherited> = {
+  data?: (params: { [K in Params]: string }) => object | undefined;
+  component?: ComponentFor<NodeFrom<R, Inherited>>;
+} & (R extends { children: infer C } ? { children: CheckChildren<C, Params, NodeFrom<R, Inherited>> } : unknown);
+
+type CheckChildren<C, Params extends string, Inherited> = {
+  [K in keyof C]: CheckRoute<C[K], Params | PathParams<C[K] extends { path: infer P } ? P : never>, Inherited>;
 };
 
-export type CheckTree<T> = CheckRoute<T, never>;
+export type CheckTree<T> = CheckRoute<T, never, never>;

@@ -111,9 +111,10 @@ give product owners the illusion of control. Spock is an attempt to make that co
 
 This is a pnpm workspace. Run `pnpm install` at the root, then `pnpm dev` to start the simple template.
 
-`router/` – `@spock/router`: the router. Apps define a typed route tree with data bindings, and use its hooks
-(`useData`, `useParams`) and components (`Link`, `Outlet`), addressing routes by name. TanStack Router runs
-underneath but isn't part of the API.
+`router/` – `@spock/router`: the router. Apps define a typed route tree with data bindings. Components never name
+their own route: `useData()` reads the node of whichever route rendered them. Pages declare the node shape they need
+with `node<T>()`, and the tree checks at compile time that each page fits where it's placed. `Link` addresses its
+target by name and fills in params from the current route. TanStack Router runs underneath but isn't part of the API.
 The simple template consumes it as TypeScript source; it has no build step.
 
 `templates/simple/` – `@spock/simple`: a React + Vite app built on `@spock/router`, with a route tree, a seeded store,
