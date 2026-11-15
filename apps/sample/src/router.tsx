@@ -1,49 +1,33 @@
 // Builds the router from the route table in routes.ts. Each route is one
-// create call with literal types so TanStack can infer paths, params and
-// context; the nesting here must match each entry's `parent`.
-import { opts } from "@spock/core";
+// createRoute call so TanStack can infer paths, params and context; the
+// nesting here must match each entry's `parent`. Bound routes repeat
+// `beforeLoad` after the spread (see `under` in @spock/core).
+import { under } from "@spock/core";
 import { createRootRoute, createRoute, createRouter } from "@tanstack/react-router";
 import { routes } from "./routes";
 
-// Bound routes repeat `beforeLoad` as an explicit property after the spread.
-// Only a direct property is checked against the route's path params; through
-// a spread, TanStack infers params from the binding instead, so binding a
-// route that lacks a needed param would compile (see bind.ts in @spock/core).
 const { root, org, orgHome, members, project, projectOverview, projectSettings } = routes;
 const { document, shareLink } = routes;
 
 export const rootRoute = createRootRoute({ ...root, beforeLoad: root.beforeLoad });
 
-export const orgRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  ...opts(org),
-  beforeLoad: org.beforeLoad,
-});
-export const orgHomeRoute = createRoute({ getParentRoute: () => orgRoute, ...opts(orgHome) });
-export const membersRoute = createRoute({ getParentRoute: () => orgRoute, ...opts(members) });
+export const orgRoute = createRoute({ ...under(rootRoute, org), beforeLoad: org.beforeLoad });
+export const orgHomeRoute = createRoute(under(orgRoute, orgHome));
+export const membersRoute = createRoute(under(orgRoute, members));
 
 export const projectRoute = createRoute({
-  getParentRoute: () => orgRoute,
-  ...opts(project),
+  ...under(orgRoute, project),
   beforeLoad: project.beforeLoad,
 });
-export const projectOverviewRoute = createRoute({
-  getParentRoute: () => projectRoute,
-  ...opts(projectOverview),
-});
-export const projectSettingsRoute = createRoute({
-  getParentRoute: () => projectRoute,
-  ...opts(projectSettings),
-});
+export const projectOverviewRoute = createRoute(under(projectRoute, projectOverview));
+export const projectSettingsRoute = createRoute(under(projectRoute, projectSettings));
 const documentRoute = createRoute({
-  getParentRoute: () => projectRoute,
-  ...opts(document),
+  ...under(projectRoute, document),
   beforeLoad: document.beforeLoad,
 });
 
 const shareLinkRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  ...opts(shareLink),
+  ...under(rootRoute, shareLink),
   beforeLoad: shareLink.beforeLoad,
 });
 
