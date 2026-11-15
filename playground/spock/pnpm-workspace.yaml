@@ -1,0 +1,6 @@
+# node_modules is shared between the Mac host and the Linux VM, so install
+# native binaries (TypeScript 7, oxlint, rolldown) for both.
+supportedArchitectures:
+  os: [darwin, linux]
+  cpu: [arm64]
+  libc: [glibc]
