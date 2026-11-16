@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@spock/router": "workspace:*",
+    "elkjs": "^0.12.1",
     "react-grab": "0.2.0"
   },
   "peerDependencies": {

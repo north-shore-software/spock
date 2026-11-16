@@ -10,6 +10,7 @@
 // it on the page.
 import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { ToolbarApp } from "./app";
+import { FlowChart } from "./flowchart";
 import { grab } from "./grab";
 import { icons } from "./icons";
 import { Picker } from "./picker";
@@ -171,7 +172,7 @@ function Window({ app, open, onClose }: { app: MountedApp; open: boolean; onClos
   );
 }
 
-/** Covers the whole viewport, under the bar. A placeholder for now: the apps' content will move in here. */
+/** Covers the whole viewport, under the bar. For now it holds the user-flow chart. */
 function Overlay({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
     <section className="overlay" aria-label="Spock" hidden={!open}>
@@ -180,7 +181,10 @@ function Overlay({ open, onClose }: { open: boolean; onClose: () => void }) {
         <CloseButton label="Close full screen" onClick={onClose} />
       </header>
       <div className="overlay-body">
-        <p className="empty">Nothing here yet.</p>
+        <div className="section">
+          <h3>User flows</h3>
+          <FlowChart active={open} />
+        </div>
       </div>
     </section>
   );

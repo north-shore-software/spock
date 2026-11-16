@@ -561,6 +561,151 @@ div.route .route-name {
   border-top: 1px solid var(--border);
 }
 
+/* ---- Flowchart (overlay) --------------------------------------------- */
+
+.flowchart > .banner {
+  margin: 0 0 12px;
+}
+.flowchart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 18px;
+  margin-bottom: 16px;
+  color: var(--text-dim);
+  font-size: 12px;
+}
+.flowchart-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.flowchart-legend i {
+  display: inline-block;
+  width: 18px;
+  height: 12px;
+}
+.fc-key-screen {
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-raised);
+}
+.fc-key-here {
+  border: 1.5px solid var(--accent);
+  border-radius: 3px;
+  background: var(--accent-soft);
+}
+.fc-key-nav {
+  border: 1px dashed var(--text-dim);
+  border-radius: 6px;
+}
+.fc-key-group {
+  border: 1px solid var(--border);
+  border-radius: 3px;
+}
+.flowchart-svg {
+  display: block;
+  margin: 0 auto;
+  overflow: visible;
+}
+.flowchart-svg text {
+  fill: var(--text);
+}
+
+.fc-group rect {
+  fill: rgb(255 255 255 / 0.02);
+  stroke: var(--border);
+}
+.fc-group-name {
+  font: 600 12px ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+.fc-group-path {
+  font: 11px ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+.flowchart-svg .fc-group-path {
+  fill: var(--text-dim);
+}
+
+.fc-screen rect {
+  fill: var(--bg-raised);
+  stroke: var(--border);
+}
+.fc-screen[data-go] {
+  cursor: pointer;
+}
+.fc-screen:hover rect {
+  stroke: var(--text-dim);
+}
+.fc-screen[data-here] rect {
+  fill: var(--accent-soft);
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.fc-screen-name {
+  font: 600 13px ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+.flowchart-svg .fc-screen[data-here] .fc-screen-name {
+  fill: var(--accent);
+}
+.fc-screen-path {
+  font: 11px ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+.flowchart-svg .fc-screen-path,
+.flowchart-svg .fc-entry {
+  fill: var(--text-dim);
+}
+.fc-entry {
+  font: 11px system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.fc-nav rect {
+  fill: var(--bg);
+  stroke: var(--text-dim);
+  stroke-dasharray: 3 3;
+}
+.fc-nav text {
+  font: 12px system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.flowchart-svg .fc-nav text {
+  fill: var(--text-dim);
+}
+.fc-nav[data-lit] rect,
+.fc-nav:hover rect {
+  stroke: var(--accent);
+}
+
+.fc-arrow {
+  cursor: pointer;
+}
+.fc-arrow-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 10;
+}
+.fc-arrow-line {
+  fill: none;
+  stroke: var(--text-dim);
+  stroke-width: 1.25;
+}
+.fc-arrow-head {
+  fill: var(--text-dim);
+}
+.fc-arrow[data-dim] {
+  opacity: 0.35;
+}
+.fc-arrow[data-lit] .fc-arrow-line,
+.fc-arrow:hover .fc-arrow-line {
+  stroke: var(--accent);
+  stroke-width: 1.75;
+}
+.fc-arrow[data-lit] .fc-arrow-head,
+.fc-arrow:hover .fc-arrow-head {
+  fill: var(--accent);
+}
+.fc-arrow:hover {
+  opacity: 1;
+}
+
 /* ---- State app ------------------------------------------------------- */
 
 .bound-list {

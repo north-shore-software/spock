@@ -5,7 +5,8 @@
 // page; picking a screen in the list looks at that one instead.
 import type { FlowGraph, FlowRoute } from "@spock/router/flows/graph";
 import { watchRouter, type DevRouter } from "@spock/router/devtools";
-import { flowsEvent, flowsRequest, type FlowsMessage } from "../../flows-message";
+import type { FlowsMessage } from "../../flows-message";
+import { flowsData } from "../flows-data";
 import type { ToolbarApp } from "../app";
 import { h, type Child } from "../dom";
 import { icons } from "../icons";
@@ -33,11 +34,11 @@ export const flowsApp: ToolbarApp = {
       );
     };
 
-    import.meta.hot?.on(flowsEvent, (next: FlowsMessage) => {
-      message = next;
+    flowsData.subscribe(() => {
+      message = flowsData.get();
       render();
     });
-    import.meta.hot?.send(flowsRequest);
+    message = flowsData.get();
     watchRouter((next) => {
       unsubscribe?.();
       router = next;
