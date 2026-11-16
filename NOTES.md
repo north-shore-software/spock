@@ -6,11 +6,11 @@
 `type ProjectId = string & { readonly __brand: "ProjectId" }`, would let the
 type system tell a project id from a document id, and from any other string.
 
-**How it would fit.** This was checked against the installed TanStack Router
-(1.170.46), not just assumed, before `@spock/router` wrapped TanStack. The wrapper's
-route tree has no `params` option yet, so step 3 means adding one and passing
-it through to TanStack, and `CheckTree` would check selectors against the
-parsed types instead of `string`.
+**How it would fit.** The route tree has no `params` option yet, so step 3
+means adding one. Spock runs the selectors itself (`resolve.ts`), so it would
+call `parse` on the matched params before passing them down, and `Link` would
+call `stringify` before building the URL. `CheckTree` would check selectors
+against the parsed types instead of `string`.
 
 1. **Domain types.** Brand the ids in `store.ts`:
    `Project = { id: ProjectId; … }` and
@@ -45,7 +45,7 @@ parsed types instead of `string`.
 
 - **Validate or only cast?** `parse` could check the id's format, or only
   cast it. Either way, it should not look the record up: missing records are
-  the binding's job (`notFound()` in `beforeLoad`).
+  the binding's job (its selector returns `undefined`).
 - **Where to put parse/stringify.** Keep the pairs next to the brand types,
   e.g. a `projectIdParam` helper, so `router.ts` doesn't repeat them.
 - **Shared params.** The share-link route introduces all three params at once,

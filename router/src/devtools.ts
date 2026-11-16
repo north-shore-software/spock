@@ -6,9 +6,11 @@
 // Every router registers itself when it's created. It's a single module-level
 // slot, so the toolbar gets the same router whether it loads before or after
 // the app.
-import { isNotFound, type AnyRouter } from "@tanstack/react-router";
+import { generatePath } from "react-router";
 import { getVersion, snapshot, subscribe } from "valtio";
-import type { DataBinding, MissingData, RouteMeta } from "./router";
+import { toPattern } from "./paths";
+import type { Match, Resolution } from "./resolve";
+import type { Session } from "./router";
 
 /** One route in the tree, in definition order, parents before children. */
 export type DevRoute = {
@@ -92,74 +94,55 @@ export function watchRouter(watcher: (router: DevRouter | undefined) => void): (
 }
 
 /** @internal Called by `createRouter`. */
-export function registerRouter(tanstack: AnyRouter, routes: DevRoute[]): void {
-  const paths = new Map(routes.map((route) => [route.name, route.path]));
+export function registerRouter(session: Session, paths: ReadonlyMap<string, string>, routes: DevRoute[]): void {
+  const listen = (listener: () => void) => {
+    session.listeners.add(listener);
+    return () => void session.listeners.delete(listener);
+  };
   current = {
     routes,
-    state: () => readState(tanstack),
-    subscribe(listener) {
-      const offs = [tanstack.subscribe("onResolved", listener), tanstack.subscribe("onRendered", listener)];
-      return () => offs.forEach((off) => off());
-    },
+    state: () => readState(session.resolution),
+    subscribe: listen,
     navigate(name, params) {
       const path = paths.get(name);
-      if (path === undefined) throw new Error(`navigate: route "${name}" has no path`);
-      void tanstack.navigate({ to: path, params });
+      if (path === undefined) throw new Error(`navigate: no route named "${name}"`);
+      if (!session.navigate) throw new Error("navigate: the router hasn't rendered yet");
+      void session.navigate(generatePath(toPattern(path), params));
     },
-    data: () => readData(tanstack),
-    subscribeData: (listener) => subscribeData(tanstack, listener),
+    data: () => readData(session.resolution),
+    subscribeData: (listener) => subscribeData(session, listen, listener),
   };
   for (const watcher of watchers) watcher(current);
 }
 
-type Match = AnyRouter["state"]["matches"][number];
+const devMatch = (match: Match): DevMatch => ({
+  name: match.route.name,
+  params: match.params,
+  boundAt: match.binding?.boundAt,
+});
 
-const nameOf = (match: Match) => (match.staticData as RouteMeta).name;
-const bindingOf = (match: Match) => (match.context as { data?: DataBinding } | undefined)?.data;
-
-/**
- * The matches that rendered, and why the page is "not found", if it is.
- * TanStack flags the match that renders "not found", and leaves the ones below
- * it unloaded, so they're dropped.
- */
-function resolve(tanstack: AnyRouter): { matches: Match[]; notFound: DevNotFound | undefined } {
-  const { matches } = tanstack.state;
-  const shown = matches.findIndex((match) => match._notFound === true);
-  if (shown === -1) return { matches, notFound: undefined };
-  const error = matches[shown]!.error;
-  const missingAt = isNotFound(error) ? (error.data as MissingData | undefined)?.missingDataAt : undefined;
-  if (missingAt === undefined) return { matches: matches.slice(0, shown + 1), notFound: { reason: "url" } };
-  const failed = matches.findIndex((match) => nameOf(match) === missingAt);
+function readState(resolution: Resolution | undefined): DevRouterState {
+  if (!resolution) return { pathname: "", search: "", matches: [], notFound: undefined };
+  const { pathname, search, matches, notFound } = resolution;
+  const shown = matches.map(devMatch);
+  if (!notFound) return { pathname, search, matches: shown, notFound: undefined };
+  if (notFound.reason === "url") return { pathname, search, matches: shown, notFound: { reason: "url" } };
+  // The route whose data is missing doesn't render, but it did match.
   return {
-    matches: failed === -1 ? matches : matches.slice(0, failed + 1),
-    notFound: { reason: "data", route: missingAt },
+    pathname,
+    search,
+    matches: [...shown, devMatch(notFound.route)],
+    notFound: { reason: "data", route: notFound.route.route.name },
   };
 }
 
-function readState(tanstack: AnyRouter): DevRouterState {
-  const { location } = tanstack.state;
-  const { matches, notFound } = resolve(tanstack);
-  return {
-    pathname: location.pathname,
-    search: location.searchStr,
-    matches: matches.map((match) => ({
-      name: nameOf(match),
-      params: match.params as Record<string, string>,
-      boundAt: bindingOf(match)?.boundAt,
-    })),
-    notFound,
-  };
-}
-
-/** Each match bound to its own node, outermost first, with the node itself. */
-function boundNodes(tanstack: AnyRouter): { route: string; node: object }[] {
+/** Each rendered match bound to its own node, outermost first, with the node itself. */
+function boundNodes(resolution: Resolution | undefined): { route: string; node: object }[] {
   const nodes: { route: string; node: object }[] = [];
-  for (const match of resolve(tanstack).matches) {
-    const binding = bindingOf(match);
-    // A failed binding leaves its parent's in the context, so this skips it.
-    if (binding?.boundAt !== nameOf(match)) continue;
+  for (const { route, binding } of resolution?.matches ?? []) {
+    if (binding?.boundAt !== route.name) continue;
     try {
-      nodes.push({ route: binding.boundAt, node: binding.select() });
+      nodes.push({ route: route.name, node: binding.select() });
     } catch {
       // Removed while viewing; the page shows that error itself.
     }
@@ -169,8 +152,8 @@ function boundNodes(tanstack: AnyRouter): { route: string; node: object }[] {
 
 const isProxy = (value: object) => getVersion(value) !== undefined;
 
-function readData(tanstack: AnyRouter): DevData | undefined {
-  const nodes = boundNodes(tanstack);
+function readData(resolution: Resolution | undefined): DevData | undefined {
+  const nodes = boundNodes(resolution);
   const root = nodes[0];
   if (!root) return undefined;
   return {
@@ -197,18 +180,18 @@ function pathTo(from: object, target: object, seen: Set<object>): string[] | und
  * Subscribes to the outermost bound node, and moves the subscription when a
  * navigation changes which node that is.
  */
-function subscribeData(tanstack: AnyRouter, listener: () => void): () => void {
+function subscribeData(session: Session, listen: (listener: () => void) => () => void, listener: () => void) {
   let watched: object | undefined;
   let unwatch: (() => void) | undefined;
   function watchRoot() {
-    const root = boundNodes(tanstack)[0]?.node;
+    const root = boundNodes(session.resolution)[0]?.node;
     if (root === watched) return;
     unwatch?.();
     watched = root;
     unwatch = root && isProxy(root) ? subscribe(root, listener) : undefined;
   }
   watchRoot();
-  const offNavigate = tanstack.subscribe("onResolved", watchRoot);
+  const offNavigate = listen(watchRoot);
   return () => {
     offNavigate();
     unwatch?.();

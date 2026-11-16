@@ -1,39 +1,53 @@
-// Builds a TanStack router from a route tree. TanStack is an implementation
-// detail: its types are bypassed (routes are built in a loop, so it can't
-// infer them), and the tree's own types in types.ts are what apps see.
-import {
-  createRootRoute,
-  createRoute,
-  createRouter as createTanStackRouter,
-  notFound,
-  type AnyRoute,
-  type AnyRouter,
-} from "@tanstack/react-router";
+// Builds a router from a route tree. React Router does the URL matching and
+// the history; everything else (data bindings, "not found", rendering the
+// nested routes) is spock's own, in resolve.ts and components.tsx. React
+// Router's types and components aren't part of the API: apps see the tree's
+// own types, from types.ts.
+import type { NavigateFunction, RouteObject } from "react-router";
 import { registerRouter } from "./devtools";
-import { paramNames } from "./paths";
-import type { CheckTree, RouteDef, Selector } from "./types";
+import { joinPaths, paramNames, toPattern } from "./paths";
+import type { Resolution } from "./resolve";
+import type { CheckTree, RouteDef } from "./types";
 
 /**
- * What a bound route puts into TanStack's route context under `data`.
- * Unbound children inherit it, so `boundAt` names the route it came from.
+ * Where a match gets its data node: its own route's binding, or the nearest
+ * bound ancestor's. `boundAt` names the route it came from.
  */
 export type DataBinding = { select: () => object; boundAt: string };
 
-/** Stored in each TanStack route's `staticData`, so matches can be named. */
-export type RouteMeta = { name: string };
+/** One route of the tree, flattened. */
+export type RouteNode = {
+  name: string;
+  def: RouteDef;
+  parent: RouteNode | undefined;
+  /** Full path, e.g. `/$orgId/projects/$projectId`. A pathless layout has its parent's. */
+  fullPath: string;
+};
+
+/** Marks the catch-all child added under each route with children; see `fallback`. */
+export type RouteHandle = { fallback: true } | undefined;
 
 /**
- * The `data` of the not-found error a bound route throws when its selector
- * finds nothing. TanStack hands the error to the nearest route with a
- * `notFound` component, so this records which route's selector it was.
+ * The router's live state: the page on screen, and React Router's `navigate`,
+ * both set by `RouterProvider` once it has rendered. Dev tools read it.
  */
-export type MissingData = { missingDataAt: string };
+export type Session = {
+  readonly resolution: Resolution | undefined;
+  readonly navigate: NavigateFunction | undefined;
+  readonly listeners: Set<() => void>;
+  /** Called by `RouterProvider` after each page it renders. */
+  publish(resolution: Resolution, navigate: NavigateFunction): void;
+};
 
 export type Router<T extends RouteDef = RouteDef> = {
-  /** @internal */
-  readonly tanstack: AnyRouter;
-  /** @internal Full TanStack path for each route name, used by `Link`. */
+  /** @internal React Router's route objects, for `matchRoutes`. Ids are route names. */
+  readonly routes: RouteObject[];
+  /** @internal Every route, by name. */
+  readonly nodes: ReadonlyMap<string, RouteNode>;
+  /** @internal Full path for each route name, used by `Link`. */
   readonly paths: ReadonlyMap<string, string>;
+  /** @internal */
+  readonly session: Session;
   /** Type-only: the tree this router was built from. */
   readonly tree?: T;
 };
@@ -44,74 +58,65 @@ export type Router<T extends RouteDef = RouteDef> = {
  * selector's result, or its nearest bound ancestor's.
  */
 export function createRouter<const T extends RouteDef>(tree: T & CheckTree<T>): Router<T> {
-  const named: [string, AnyRoute, RouteDef][] = [];
-  const root = createRootRoute({
-    component: tree.component,
-    notFoundComponent: tree.notFound,
-    beforeLoad: tree.data && bindData(tree.data, "root"),
-    staticData: { name: "root" } satisfies RouteMeta,
-  });
-  named.push(["root", root, tree]);
-  addChildren(root, tree.children, "");
-  const tanstack = createTanStackRouter({ routeTree: root });
-  // TanStack computes each route's fullPath when the router is created.
-  const paths = new Map(named.map(([name, route]) => [name, route.fullPath as string]));
-  registerRouter(
-    tanstack,
-    named.map(([name, route, def]) => {
-      // A pathless layout's fullPath is its parent's, so it has none of its own.
-      const path = name === "root" || def.path !== undefined ? (route.fullPath as string) : undefined;
-      return {
-        name,
-        path,
-        params: paramNames(route.fullPath as string),
-        bound: def.data !== undefined,
-        depth: name === "root" ? 0 : name.split(".").length,
-      };
-    }),
-  );
-  return { tanstack, paths };
+  const nodes = new Map<string, RouteNode>();
+  const rootNode: RouteNode = { name: "root", def: tree, parent: undefined, fullPath: "/" };
+  nodes.set("root", rootNode);
+  const routes: RouteObject[] = [
+    // The root always gets a fallback, so every URL matches something.
+    { id: "root", path: "/", children: [...childRoutes(rootNode, tree.children), fallback("root")] },
+  ];
+  const paths = new Map([...nodes].map(([name, node]) => [name, node.fullPath]));
+  const session: Session = {
+    resolution: undefined,
+    navigate: undefined,
+    listeners: new Set(),
+    publish(resolution, navigate) {
+      Object.assign(this, { resolution, navigate });
+      for (const listener of this.listeners) listener();
+    },
+  };
 
-  function addChildren(parent: AnyRoute, children: Record<string, RouteDef> | undefined, prefix: string) {
-    if (!children) return;
-    parent.addChildren(
-      Object.entries(children).map(([key, def]) => {
-        const name = prefix + key;
-        const route = createRoute({
-          getParentRoute: () => parent,
-          // Without a path it's a pathless layout, identified by its name.
-          ...(def.path === undefined ? { id: name } : { path: def.path }),
-          component: def.component,
-          notFoundComponent: def.notFound,
-          beforeLoad: def.data && bindData(def.data, name),
-          staticData: { name } satisfies RouteMeta,
-        });
-        named.push([name, route, def]);
-        addChildren(route, def.children, `${name}.`);
-        return route;
-      }),
-    );
+  registerRouter(
+    session,
+    paths,
+    [...nodes.values()].map((node) => ({
+      name: node.name,
+      // A pathless layout has no path of its own.
+      path: node.name === "root" || node.def.path !== undefined ? node.fullPath : undefined,
+      params: paramNames(node.fullPath),
+      bound: node.def.data !== undefined,
+      depth: node.name === "root" ? 0 : node.name.split(".").length,
+    })),
+  );
+  return { routes, nodes, paths, session };
+
+  function childRoutes(parent: RouteNode, children: Record<string, RouteDef> | undefined): RouteObject[] {
+    if (!children) return [];
+    return Object.entries(children).map(([key, def]): RouteObject => {
+      const name = parent.name === "root" ? key : `${parent.name}.${key}`;
+      const node: RouteNode = {
+        name,
+        def,
+        parent,
+        fullPath: def.path === undefined ? parent.fullPath : joinPaths(parent.fullPath, def.path),
+      };
+      nodes.set(name, node);
+      const grandchildren = childRoutes(node, def.children);
+      // `"/"` is the index route. With children of its own, it's a layout
+      // that adds no segment, the same as one with no path.
+      if (def.path === "/" && grandchildren.length === 0) return { id: name, index: true };
+      const path = def.path === undefined || def.path === "/" ? undefined : toPattern(def.path);
+      if (grandchildren.length === 0) return { id: name, path };
+      return { id: name, path, children: [...grandchildren, fallback(name)] };
+    });
   }
 }
 
 /**
- * The `beforeLoad` for a bound route. It stores a selector, not the record:
- * route context is computed on navigation, not when the store changes, so a
- * stored proxy could go stale. The hooks call `select()` at render time.
+ * A catch-all under `parent`. React Router ranks it below every real route,
+ * so it only matches a URL that goes past `parent`'s children, and the deepest
+ * one that matches says how far the URL got.
  */
-function bindData(select: Selector, boundAt: string) {
-  return ({ params }: { params: object }): { data: DataBinding } => {
-    if (!select(params)) throw notFound({ data: { missingDataAt: boundAt } satisfies MissingData });
-    return {
-      data: {
-        boundAt,
-        select: () => {
-          const node = select(params);
-          // Guard only; deletion is not supported (see `RouteDef.data`).
-          if (!node) throw new Error("Record removed while viewing");
-          return node;
-        },
-      },
-    };
-  };
+function fallback(parent: string): RouteObject {
+  return { id: `${parent}.*`, path: "*", handle: { fallback: true } satisfies RouteHandle };
 }

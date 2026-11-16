@@ -114,7 +114,7 @@ This is a pnpm workspace. Run `pnpm install` at the root, then `pnpm dev` to sta
 `router/` – `@spock/router`: the router. Apps define a typed route tree with data bindings. Components never name
 their own route: `useData()` reads the node of whichever route rendered them. Pages declare the node shape they need
 with `node<T>()`, and the tree checks at compile time that each page fits where it's placed. `Link` addresses its
-target by name and fills in params from the current route. TanStack Router runs underneath but isn't part of the API.
+target by name and fills in params from the current route. React Router matches URLs and keeps the history underneath, but it isn't part of the API.
 The simple template consumes it as TypeScript source; it has no build step.
 
 `toolbar/` – `@spock/toolbar`: a dev toolbar, modelled on Astro's. Add `spockToolbar()` to an app's Vite plugins

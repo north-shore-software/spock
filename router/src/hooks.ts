@@ -2,9 +2,9 @@
 // rendered it, so its position in the tree decides what it sees. Pages
 // declare the node shape they need with `node<T>()`, and the route tree
 // checks that each page is placed on a route whose node fits (see `Page`).
-import { useMatch } from "@tanstack/react-router";
 import { useSnapshot, type Snapshot } from "valtio";
-import type { DataBinding, RouteMeta, Router } from "./router";
+import { useNearestMatch } from "./context";
+import type { Router } from "./router";
 import type { Entries, Page, RouteComponent } from "./types";
 
 /**
@@ -32,16 +32,8 @@ export type NodeOf<N extends RouteName> = EntryOf<N>["node"];
 
 type SnapshotOptions = { sync?: boolean };
 
-/**
- * The match of the route that rendered this component. A layout gets its own
- * match even while a child route is showing.
- */
-function useNearestMatch() {
-  return useMatch({ strict: false });
-}
-
 function useSelectedData(hook: string): object {
-  const data = (useNearestMatch().context as { data?: DataBinding }).data;
+  const data = useNearestMatch(hook).binding;
   if (!data) throw new Error(`${hook}: no data is bound to this route or its ancestors`);
   return data.select();
 }
@@ -86,9 +78,9 @@ export function node<T extends object>() {
 
 /** Which route rendered this component, and which route's binding it got its node from. */
 export function useRouteInfo(): { name: RouteName; boundAt: RouteName | undefined } {
-  const match = useNearestMatch();
+  const match = useNearestMatch("useRouteInfo");
   return {
-    name: (match.staticData as RouteMeta).name as RouteName,
-    boundAt: (match.context as { data?: DataBinding }).data?.boundAt as RouteName | undefined,
+    name: match.route.name as RouteName,
+    boundAt: match.binding?.boundAt as RouteName | undefined,
   };
 }

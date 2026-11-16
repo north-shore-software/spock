@@ -102,9 +102,10 @@ children: {
 
 ## Not found
 
-A page is "not found" when no route matches the URL, or when a route's `data` selector returns `undefined`. Either
-way, the nearest route with a `notFound` component renders it. A `notFound` component gets no node, so don't call
-`useData()` in one.
+A page is "not found" when no route matches the URL, or when a route's `data` selector returns `undefined`. The routes
+above that point still render, and "not found" shows in the outlet of the last one. The component is the nearest
+`notFound` at or above the route whose selector failed, or, for an unmatched URL, at or above the deepest route that
+matched. A `notFound` component isn't checked against the tree, so don't call `useData()` in one.
 
 ## Many routes, one binding
 

@@ -10,4 +10,4 @@ export {
   type Register,
   type RouteName,
 } from "./hooks";
-export { Link, Outlet, RouterProvider, type LinkProps } from "./components";
+export { Link, Outlet, RouterProvider, type LinkProps, type RouterProviderProps } from "./components";

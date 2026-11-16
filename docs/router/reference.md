@@ -55,9 +55,14 @@ declare module "@spock/router" {
 
 ```tsx
 <RouterProvider router={router} />
+<RouterProvider router={router} initialPath="/acme/projects/web" />
 ```
 
-Renders the app. Put it at the root, once.
+Renders the app. Put it at the root, once. Each navigation by `Link` scrolls to the top; back and forward leave the
+scroll position to the browser.
+
+With `initialPath`, it renders that URL from memory instead of the address bar, so links navigate without touching
+the browser's history. Use it to render a page in a given state outside the app: a story, a test, a static export.
 
 ### `Link`
 
@@ -78,6 +83,9 @@ Throws when it renders if the merged params are missing one the target needs. Se
 ### `Outlet`
 
 Renders the matched child route. Put one in every layout.
+
+If a route throws while it renders, for example a `Link` missing a param, the error shows in that route's place. The
+layouts above it keep working, and the error clears on the next navigation.
 
 ## Hooks
 
