@@ -4,8 +4,8 @@ description: How @spock/router joins a route tree to a data tree, and what the t
 ---
 
 `@spock/router` is a typed router for React apps. You define a route tree with data bindings, and the type checker
-makes sure every page fits where it's placed. [TanStack Router](https://tanstack.com/router) runs underneath, but it
-isn't part of the API.
+makes sure every page fits where it's placed. [React Router](https://reactrouter.com) matches URLs and keeps the
+history underneath, but it isn't part of the API.
 
 ## Why it works this way
 

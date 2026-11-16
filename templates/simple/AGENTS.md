@@ -84,7 +84,7 @@ Each one means the code and the outline disagree. Don't make the error go away w
 - `as` casts, `any`, `@ts-ignore` or `@ts-expect-error`
 - the generic `useData<T>()` from `@spock/router` in place of `node<T>()`, which isn't checked
 - importing the store into a component
-- reading route params, or importing `@tanstack/react-router`
+- reading route params, or importing `react-router`
 - moving the code somewhere the tree doesn't check, such as a `notFound` component or a wrapper
 
 Either the code is wrong, in which case fix the code, or the outline is wrong, in which case follow rule 1.
@@ -94,7 +94,8 @@ Either the code is wrong, in which case fix the code, or the outline is wrong, i
 - Don't put route names in components, except as a `Link` target.
 - Don't put params, ids or store paths in components, except the ids a `Link` adds (rule 6).
 - Don't import `store` outside `src/data/`.
-- Don't import `@tanstack/react-router`. TanStack runs underneath, but it isn't part of the API.
+- Don't import `react-router`. It runs underneath, but it isn't part of the API. Its `Link`, `useParams` and
+  `useNavigate` skip the bindings and the tree checks.
 
 ### 4. Pages declare the shape they need
 
