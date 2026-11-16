@@ -5,19 +5,26 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./devtools": "./src/devtools.ts"
+    "./devtools": "./src/devtools.ts",
+    "./flows": "./src/flows/index.ts"
+  },
+  "bin": {
+    "spock-flows": "./src/flows/cli.ts"
   },
   "scripts": {
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "test": "node --test \"src/**/*.test.ts\""
   },
   "dependencies": {
     "@tanstack/react-router": "^1.170.46"
   },
   "peerDependencies": {
     "react": "^19.3.1",
-    "valtio": "^2.3.2"
+    "valtio": "^2.3.2",
+    "typescript": "~7.0.2"
   },
   "devDependencies": {
+    "@types/node": "^24.19.2",
     "@types/react": "^19.3.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",

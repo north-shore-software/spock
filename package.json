@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "pnpm --filter @spock/simple dev",
     "dev:docs": "pnpm --filter @spock/docs dev",
+    "flows": "pnpm --filter @spock/simple flows",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
     "lint": "oxlint router toolbar templates"
