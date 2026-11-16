@@ -6,7 +6,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./devtools": "./src/devtools.ts",
-    "./flows": "./src/flows/index.ts"
+    "./flows": "./src/flows/index.ts",
+    "./flows/graph": "./src/flows/graph.ts"
   },
   "bin": {
     "spock-flows": "./src/flows/cli.ts"

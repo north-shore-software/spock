@@ -6,7 +6,7 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
-    "types": []
+    "types": ["vite/client"]
   },
-  "include": ["src/client"]
+  "include": ["src/client", "src/flows-message.ts"]
 }

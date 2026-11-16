@@ -462,6 +462,105 @@ div.route .route-name {
   font-weight: 600;
 }
 
+/* ---- Flows app ------------------------------------------------------- */
+
+.flow-focus {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: var(--bg-raised);
+}
+.flow-name {
+  color: var(--accent);
+  font-weight: 600;
+}
+.flow-follow {
+  margin-left: auto;
+}
+.flow-edges {
+  display: flex;
+  flex-direction: column;
+}
+.flow-edge {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 5px 0;
+  border-top: 1px solid var(--border);
+}
+.flow-edge:first-child {
+  border-top: 0;
+}
+.flow-sources {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-left: auto;
+}
+.flow-screen,
+.flow-source,
+.flow-follow,
+.flow-go {
+  padding: 1px 6px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.flow-screen {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+.flow-screen.here {
+  color: var(--accent);
+}
+.flow-screen.focus {
+  background: var(--accent-soft);
+}
+.flow-follow,
+.flow-go {
+  color: var(--accent);
+}
+.flow-screen:hover,
+.flow-source:hover,
+.flow-follow:hover,
+.flow-go:hover {
+  background: var(--bg-hover);
+}
+.flow-screen:focus-visible,
+.flow-source:focus-visible,
+.flow-follow:focus-visible,
+.flow-go:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.flow-problems {
+  margin: 6px 0 0;
+  padding-left: 0;
+  list-style: none;
+}
+.flow-problems .flow-source {
+  color: inherit;
+}
+.flow-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.flow-table th {
+  padding: 4px 8px 4px 0;
+  color: var(--text-dim);
+  font-weight: 500;
+  text-align: left;
+}
+.flow-table td {
+  padding: 3px 8px 3px 0;
+  border-top: 1px solid var(--border);
+}
+
 /* ---- State app ------------------------------------------------------- */
 
 .bound-list {

@@ -6,5 +6,5 @@
     "module": "nodenext",
     "types": ["node"]
   },
-  "include": ["src/plugin.ts"]
+  "include": ["src/plugin.ts", "src/flows-message.ts"]
 }

@@ -7,6 +7,10 @@ export const icons = {
   router: icon(
     `<circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="12" r="2"/><path d="M6 7v10"/><path d="M6 8c0 3 2.5 4 6 4h4"/>`,
   ),
+  // Three screens joined by arrows.
+  flows: icon(
+    `<rect x="3" y="4" width="6" height="5" rx="1"/><rect x="15" y="4" width="6" height="5" rx="1"/><rect x="9" y="15" width="6" height="5" rx="1"/><path d="M9 6.5h6"/><path d="M13 4.5l2 2-2 2"/><path d="M18 9v2.5a1 1 0 0 1-1 1h-5V15"/>`,
+  ),
   // A stack of records.
   state: icon(
     `<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.66 3.13 3 7 3s7-1.34 7-3V6"/><path d="M5 12v6c0 1.66 3.13 3 7 3s7-1.34 7-3v-6"/>`,
