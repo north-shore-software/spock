@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Throwaway prototyping copy of templates/simple (see scripts/playground.mjs)
+/playground

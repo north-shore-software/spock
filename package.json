@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "pnpm --filter @spock/simple dev",
     "dev:docs": "pnpm --filter @spock/docs dev",
+    "playground": "node scripts/playground.mjs",
+    "dev:playground": "pnpm --dir playground dev",
     "flows": "pnpm --filter @spock/simple flows",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
